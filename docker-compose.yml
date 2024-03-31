@@ -1,0 +1,51 @@
+services:
+  database:
+    image: "database:latest"
+    ports:
+      - "5432:5432"
+    env_file:
+      - ".env"
+    volumes:
+      - "./database:/app"
+      - "./database/app:/var/lib/postgresql/data/pgdata"
+    networks:
+      - default
+    build: 
+      context: "./database"
+      dockerfile: "database.dockerfile"
+      network: "host"
+  backend:
+    image: "backend:latest"
+    ports:
+      - "8888:8888"
+    env_file:
+      - ".env"
+    volumes:
+      - "./backend:/app"
+    networks:
+      - default
+    build:
+      context: "./backend"
+      dockerfile: "backend.dockerfile"
+      network: "host"
+  frontend:
+    image: "frontend:latest"
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development 
+      - WATCHPACK_POLLING=true
+    command: npm run dev
+    env_file:
+      - ".env"
+    volumes:
+      - "./frontend:/app"
+    networks:
+      - default
+    build:
+      context: "./frontend"
+      dockerfile: "frontend.dockerfile"
+      network: "host"
+networks:
+  default:
+    driver: bridge
