@@ -1,1 +1,3 @@
-from .user import User as User
+from .category import Category
+from .sub_category import SubCategory
+from .user import User
