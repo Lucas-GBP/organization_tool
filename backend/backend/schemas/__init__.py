@@ -1,3 +1,3 @@
-from .category import CategoryRecord
-from .sub_category import SubCategory
+from .category import CategoryRecord, Category, CategoryPost, CategoryPatch
+from .sub_category import SubCategoryRecord, SubCategory, SubCategoryPost, SubCategoryIntegratedPost
 from .user import UserRecord
