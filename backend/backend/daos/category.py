@@ -10,7 +10,7 @@ from uuid import UUID
 from backend import daos
 from typing import AsyncGenerator
 
-from sqlalchemy.sql import select, insert, delete
+from sqlalchemy.sql import select, insert, delete, update
 from backend.api.session import AsyncSession
 
 class Category(BaseDao[CategoryModel, CategoryRecord]):
@@ -80,12 +80,21 @@ class Category(BaseDao[CategoryModel, CategoryRecord]):
             print(f'Failed to create {self.model.__tablename__}: {e}')
             return None
         
-    async def pacth(
+    async def patch(
         self,
         db: AsyncSession,
         data: CategoryPatch
     ):
-        return
+        statement = update(
+            self.model
+        ).where(
+            self.model.uuid == data.uuid
+        ).values(
+            data
+        ).returning(self.model)
+        result = (await db.execute(statement)).all()
+
+        return self.schemaRecord.model_validate(result[0]) if result else None
         
     async def delete(
         self,

@@ -3,7 +3,14 @@ from uuid import UUID
 from backend.api.session import get_session, AsyncSession
 
 from backend.daos import category, sub_category
-from backend.schemas import Category, CategoryPost, CategoryPatch, SubCategory
+from backend.schemas import (
+    Category, 
+    CategoryPost, 
+    CategoryPatch, 
+    SubCategory,
+    SubCategoryPost,
+    SubCategoryPatch
+)
 
 router = APIRouter()
 
@@ -18,20 +25,6 @@ async def get_category(
         )
 
     return result.to_base_model() if result else None
-
-@router.get("/all/{user_uuid}")
-async def get_all_content(
-    user_uuid:UUID,
-    Session: AsyncSession = Depends(get_session)
-):
-    content_list:list[Category] = []
-    async with Session as db, db.begin():
-        generator = category.get_all_with_subcategory(db,
-            user_uuid
-        )
-        async for item in generator:
-            content_list.append(item)
-        return content_list
 
 @router.post("/")
 async def post_content(
@@ -59,8 +52,8 @@ async def path_content(
     data:CategoryPatch = Body(...)
 ):
     async with Session as db, db.begin():
-        patched = await category.pacth(db, data)
-    return
+        patched = await category.patch(db, data)
+    return patched
 
 @router.delete("/{uuid}")
 async def delete_content(
@@ -69,6 +62,60 @@ async def delete_content(
 ):
     async with Session as db, db.begin():
         deleted = await category.delete(db, uuid)
-        print(deleted)
     
     return deleted
+
+@router.get("/all/{user_uuid}")
+async def get_all_content(
+    user_uuid:UUID,
+    Session: AsyncSession = Depends(get_session)
+):
+    content_list:list[Category] = []
+    async with Session as db, db.begin():
+        generator = category.get_all_with_subcategory(db,
+            user_uuid
+        )
+        async for item in generator:
+            content_list.append(item)
+        return content_list
+
+@router.get("/subcategory/{uuid}")
+async def get_sub_category(
+    uuid:UUID,
+    Session: AsyncSession = Depends(get_session)
+):
+    async with Session as db, db.begin():
+        result = await sub_category.get(db,
+            uuid=uuid
+        )
+
+    return result.to_base_model() if result else None
+
+@router.post("/subcategory")
+async def post_sub_category(
+    Session: AsyncSession = Depends(get_session),
+    data:SubCategoryPost = Body(...)
+):
+    async with Session as db, db.begin():
+        posted = await sub_category.post(db, data)
+
+    return posted.to_base_model() if posted else None
+
+@router.patch("/subcategory")
+async def patch_sub_category(
+    Session: AsyncSession = Depends(get_session),
+    data: SubCategoryPatch = Body(...)
+):
+    async with Session as db, db.begin():
+        patched = await sub_category.patch(db, data)
+    return patched
+
+@router.delete("/subcategory/{uuid}")
+async def delete_sub_category(
+    uuid: UUID,
+    Session: AsyncSession = Depends(get_session)
+):
+    async with Session as db, db.begin():
+        deleted = await sub_category.delete(db, uuid)
+
+        return deleted

@@ -23,3 +23,8 @@ class SubCategoryIntegratedPost(BaseModel):
 
 class SubCategoryPost(SubCategoryIntegratedPost):
     category_uuid:UUID
+
+class SubCategoryPatch(BaseModel):
+    uuid: UUID
+    title: str|None
+    color: str|None
