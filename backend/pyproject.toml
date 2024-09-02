@@ -12,11 +12,13 @@ fastapi = "^0.110.0"
 pydantic = "^2.6.4"
 psycopg2-binary = "^2.9.9"
 psycopg2 = "^2.9.9"
-mypy = "^1.9.0"
 asyncmy = "^0.2.9"
 uvloop = "^0.19.0"
 asyncpg = "^0.29.0"
+alembic-utils = "^0.8.4"
 
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.11.2"
 
 [build-system]
 requires = ["poetry-core"]

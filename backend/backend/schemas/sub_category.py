@@ -1,5 +1,6 @@
 from ._base import BaseRecord, BaseModel
 from uuid import UUID
+from .utils import ColorField
 
 class SubCategory(BaseModel):
     uuid:UUID

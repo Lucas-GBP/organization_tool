@@ -27,3 +27,8 @@ backend/**/__pycache__
 backend/*__pycache__*
 # Database
 database/app/*
+# Docs
+docs/.obsidian/*
+!docs/.obsidian/app.json
+!docs/.obsidian/core-plugins.json
+!docs/.obsidian/core-plugins-migration.json

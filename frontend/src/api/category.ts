@@ -4,8 +4,7 @@ import type { CategoryRecord, CategoryPost } from "./types/category";
 
 export class Category extends Base {
     public constructor(){
-        super();
-        this.http = this.http+"category/";
+        super("category/");
     }
 
     public async get(uuid:UUID): Promise<CategoryRecord> {
@@ -34,6 +33,10 @@ export class Category extends Base {
         return response.json();
     }
 
+    public async update() {
+        return
+    }
+
     public async delete(uuid:UUID): Promise<CategoryRecord>{
         const response = await this.fetch(`${uuid}`,{
             method:"DELETE"
@@ -41,4 +44,13 @@ export class Category extends Base {
 
         return response.json()
     }
+
+    public async delete_sub(subcategory_uuid:UUID) {
+        const response = await this.fetch(`subcategory/${subcategory_uuid}`,{
+            method:"DELETE"
+        });
+
+        return response.json();
+    }
+
 }

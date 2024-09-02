@@ -3,21 +3,21 @@ export class HTTPResponse<T> {
     private _status: number;
     private _url: string;
     public constructor(url: string, data: T, status: number) {
-      this._url = url;
-      this._data = data;
-      this._status = status;
+        this._url = url;
+        this._data = data;
+        this._status = status;
     }
   
     public get url(): string {
-      return this._url;
+        return this._url;
     }
   
     public get data(): T {
-      return this._data;
+        return this._data;
     }
   
     public get status(): number {
-      return this._status;
+        return this._status;
     }
-  }
+}
   

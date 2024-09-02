@@ -15,4 +15,4 @@ async def root(
     except Exception as e:
         print(f'Erro ao conectar: {e}')
 
-    return "Hello World"
+    return "Hello, World!"

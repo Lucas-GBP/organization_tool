@@ -53,7 +53,7 @@ async def path_content(
 ):
     async with Session as db, db.begin():
         patched = await category.patch(db, data)
-    return patched
+    return patched.to_base_model() if patched else None
 
 @router.delete("/{uuid}")
 async def delete_content(

@@ -1,5 +1,14 @@
+@use "../variables.module";
+
+
 .categoryItem {
-    background-color: gray;
+    background-color: variables.$section_color;
     margin: 0.5rem;
     padding: 0.5rem;
+}
+.subCategorySection {
+    background-color: variables.$subsection_color;
+    margin: 0.25rem;
+    padding: 0.25rem;
+    color: #000;
 }
