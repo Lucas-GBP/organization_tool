@@ -1,9 +1,9 @@
 from datetime import datetime as Pydatetime
-from uuid import UUID as PyUUID
+from uuid import UUID
 from sqlalchemy import ForeignKey, DateTime, select
 from sqlalchemy.orm import mapped_column, MappedColumn as Mapped
 
-from backend.models.utils import (
+from backend.db.utils import (
     Base, BaseView,
     uuid_column, primary_id_column,
     view_entity
@@ -14,7 +14,7 @@ from .user import User
 
 class TimeRangeEvent(Base):
     id:Mapped[int] = primary_id_column()
-    uuid:Mapped[PyUUID] = uuid_column()
+    uuid:Mapped[UUID] = uuid_column()
 
     user_id:Mapped[int] = mapped_column(ForeignKey(User.id))
     category_id:Mapped[int|None] = mapped_column(ForeignKey(Category.id), nullable=True)
@@ -30,7 +30,7 @@ class TimeRangeEvent(Base):
 
 class TimeRangeEventNotDeleted(BaseView):
     id:Mapped[int] = primary_id_column()
-    uuid:Mapped[PyUUID]
+    uuid:Mapped[UUID]
 
     user_id:Mapped[int]
     category_id:Mapped[int|None]

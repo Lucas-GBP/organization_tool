@@ -1,5 +1,5 @@
 from ._base import BaseDao
-from backend.models import (
+from backend.db.models import (
     TimeRangeEvent,
     TimeRangeEventNotDeleted
 )

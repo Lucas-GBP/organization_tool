@@ -37,6 +37,10 @@ export class Category extends Base {
         return
     }
 
+    public async update_sub() {
+        return
+    }
+
     public async delete(uuid:UUID): Promise<CategoryRecord>{
         const response = await this.fetch(`${uuid}`,{
             method:"DELETE"

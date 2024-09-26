@@ -1,15 +1,17 @@
 from uuid import UUID
 
 from ._base import BaseRecord, BaseModel
-from .sub_category import SubCategoryIntegratedPost, SubCategory
+from .sub_category import SubCategoryIntegratedPost, SubCategory, SubCategoryRecord
 from .utils import ColorField
 
 class Category(BaseModel):
     uuid:UUID
     color:str|None = ColorField()
-    sub_categories:list[SubCategory]|None = None
     title:str
     description:str|None
+
+class CategoryWithSubCategory(Category):
+    sub_categories:list[SubCategory]|None = None
 
 class CategoryRecord(BaseRecord):
     id:int
@@ -20,16 +22,40 @@ class CategoryRecord(BaseRecord):
     color:str|None = ColorField()
     description:str|None
 
-    def to_base_model(self) -> Category:
-        dumpin = self.model_dump()
-        return Category(**dumpin)
+    def to_base_model(self):
+        return Category(
+            uuid=self.uuid,
+            color=self.color,
+            title=self.title,
+            description=self.description
+        )
+
+class CategoryWithSubCategoryRecord(CategoryRecord):
+    sub_categories:list[SubCategoryRecord]|None = None
+
+    def to_base_model(self) -> CategoryWithSubCategory:
+        sub_categories_list:list[SubCategory]|None = None
+        if self.sub_categories is not None:
+            sub_categories_list = []
+            for item in self.sub_categories:
+                sub_categories_list.append(item.to_base_model())
+
+        return CategoryWithSubCategory(
+            uuid=self.uuid,
+            color=self.color,
+            title=self.title,
+            description=self.description,
+            sub_categories=sub_categories_list
+        )
 
 class CategoryPost(BaseModel):
     user_uuid:UUID
     color:str|None = ColorField()
-    sub_categories:list[SubCategoryIntegratedPost]|None = None
     title:str
     description:str|None = None
+
+class CategoryWithSubCategoryPost(CategoryPost):
+    sub_categories:list[SubCategoryIntegratedPost]|None = None
 
 class CategoryPatch(BaseModel):
     uuid:UUID

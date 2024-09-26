@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useContext, useCallback } from "react"
 import { Category } from "@/api/category";
 import { CategoryItem } from "@/components";
 import type { CategoryRecord, CategoryPost } from "@/api/types/category";
+import { arrayToMap } from "@/utils/arrayToMap";
 import { PageContext } from "@/context/pageContext";
 import { UUID } from "crypto";
 
@@ -20,10 +21,10 @@ const standart_post_data:(uuid:UUID) => CategoryPost = (uuid:UUID) => { return {
     }]
 }}
 
-export default function Test(){
+export default function Page(){
     const context = useContext(PageContext);
-    const [data, setData] = useState<CategoryRecord[]>([]);
     const categoryRepository = useRef(new Category());
+    const [data, setData] = useState<Map<UUID, CategoryRecord>>(new Map());
 
     const getData = useCallback(async () => {
         if (!context || !context?.user_uuid) {
@@ -32,8 +33,7 @@ export default function Test(){
         };
 
         const category_list = await categoryRepository.current.get_all(context.user_uuid);
-        console.log({category_list});
-        setData(category_list);
+        setData(arrayToMap(category_list));
     }, [context, context?.user_uuid])
 
     const postData = useCallback(async () => {
@@ -49,13 +49,18 @@ export default function Test(){
     }, [context, context?.user_uuid])
 
     useEffect(() => {
+        if (!context || !context?.user_uuid) {
+            console.warn("(useEffect) -> Without context or user_uuid");
+            return;
+        };
+
         try{
             getData()
         } catch (e){
             console.error(e);
             setData([]);
         }
-    }, [])
+    }, [context])
 
     return <>
         <main>

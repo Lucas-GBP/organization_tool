@@ -1,7 +1,10 @@
 from .category import (
-    CategoryRecord, 
-    Category, 
+    CategoryRecord,
+    CategoryWithSubCategoryRecord,
+    Category,
+    CategoryWithSubCategory,
     CategoryPost, 
+    CategoryWithSubCategoryPost,
     CategoryPatch
 )
 from .sub_category import (

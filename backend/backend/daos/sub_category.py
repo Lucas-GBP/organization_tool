@@ -2,7 +2,7 @@ from uuid import UUID
 from sqlalchemy.sql import select, insert, delete, update
 
 from ._base import BaseDao
-from backend.models import (
+from backend.db.models import (
     SubCategory as SubCategoryModel, 
     Category as CategoryModel
 )
@@ -15,6 +15,9 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryRecord]):
         db: AsyncSession,
         category_uuid: UUID
     ):
+        """
+        get all subcategory itens from a category
+        """
         try:
             statement = select(self.model).where(
                 self.model.category_id == select(CategoryModel.id).where(
@@ -34,6 +37,9 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryRecord]):
         db: AsyncSession,
         data: SubCategoryPost
     ):
+        """
+        Post a single subgategory
+        """
         try:
             statement = insert(self.model).values(
                 self.model.category_id == select(CategoryModel.id).where(
@@ -54,6 +60,9 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryRecord]):
         data:list[SubCategoryIntegratedPost],
         category_uuid:UUID
     ):
+        """
+        post a list of sub_category in a single category
+        """
         try:
             valueslist = [{
                 "title": item.title,

@@ -1,17 +1,17 @@
 from ._base import BaseDao
-from backend.models import Category as CategoryModel, User as UserModel
+from backend.db.models import Category as CategoryModel, User as UserModel
 from backend.schemas import (
-    CategoryRecord, 
+    CategoryRecord,
+    CategoryWithSubCategoryRecord,
     CategoryPost, 
     CategoryPatch, 
 )
 from uuid import UUID
 from backend import daos
-
-from sqlalchemy.sql import select, insert, delete, update
+from sqlalchemy.sql import select, insert, update
 from backend.api.session import AsyncSession
 
-class Category(BaseDao[CategoryModel, CategoryRecord]):    
+class Category(BaseDao[CategoryModel, CategoryRecord]): 
     async def get_all(
         self,
         db: AsyncSession,
@@ -39,15 +39,31 @@ class Category(BaseDao[CategoryModel, CategoryRecord]):
         try:
             category_generator = self.get_all(db, user_uuid)
             async for item in category_generator:
-                category = item.to_base_model()
-                category.sub_categories = []
+                item.sub_categories = []
                 sub_category_generator = daos.sub_category.get_all(db, item.uuid)
                 async for sub_category in sub_category_generator:
-                    category.sub_categories.append(sub_category.to_base_model())
+                    item.sub_categories.append(sub_category)
                 
-                yield category
+                yield CategoryWithSubCategoryRecord.model_validate(item)
         except Exception as e:
             print(f'Failed to get with subcategory and {self.model.__tablename__}: {e}')
+            raise e
+
+    async def get_with_subcategory(
+        self,
+        db: AsyncSession,
+        user_uuid:UUID
+    ):
+        try:
+            category = await self.get(db, user_uuid)
+            if category is not None:
+                category.sub_categories = []
+                sub_category_generator = daos.sub_category.get_all(db, category.uuid)
+                async for sub_category in sub_category_generator:
+                    category.sub_categories.append(sub_category)
+            
+            return CategoryWithSubCategoryRecord.model_validate(category)
+        except Exception as e:
             raise e
 
     async def post(

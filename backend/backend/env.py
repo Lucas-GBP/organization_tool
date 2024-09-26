@@ -5,13 +5,13 @@ from sqlalchemy import pool
 from alembic import context
 from alembic_utils.replaceable_entity import register_entities
 
-from backend.models import entities
-from backend.models.utils.base import Base
+from backend.db import entities
+from backend.db.utils.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-#register_entities(entities)
+register_entities(entities)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

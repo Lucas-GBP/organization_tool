@@ -1,11 +1,11 @@
 import style from "@/styles/components/categoryItem.module.scss";
 
 import { useContext, useCallback } from "react";
-import { UUID } from "crypto";
 
-import type { CategoryRecord } from "@/api/types/category";
+import type { CategoryRecord, SubCategoryRecord } from "@/api/types/category";
 import type { Category } from "@/api/category";
 import { PageContext } from "@/context/pageContext";
+
 
 export interface CategoryItemProps {
     item:CategoryRecord,
@@ -15,30 +15,59 @@ export interface CategoryItemProps {
 export function CategoryItem(props:CategoryItemProps){
     const {item, api, updateList} = props;
     const context = useContext(PageContext);
+    item.color = "#aa";
 
     const deleteItem = useCallback(async () => {
         const deleted = await api.delete(item.uuid);
         updateList();
-    }, [item, context?.user_uuid])
+    }, [item, api])
     const updateItem = useCallback(async () => {
-    }, []);
-    const deleteSubItem = useCallback(async (uuid: UUID) => {
-        const deleted = await api.delete_sub(uuid);
+        const updated = await api.update();
         updateList();
-    }, [context?.user_uuid])
-    const updateSubItem = useCallback(async () => {
     }, []);
 
     return <div className={style.categoryItem}>
-        Title: <input value={item.title}/> Color: <input value={item.color}/>
+        Title: <input defaultValue={item.title}/> Color: <input defaultValue={item.color}/>
         <button onClick={deleteItem}>Delete</button>
-        <div className={style.subCategorySection}>
-            {item.sub_categories.map((sub) => {
-                return <div key={sub.uuid}>
-                    Title: <input value={sub.title}/> Color: <input value={sub.color}/>
-                    <button onClick={() => deleteSubItem(sub.uuid)}>Delete</button>
-                </div>
+        {item.sub_categories.length > 0 ? <div className={style.subCategorySection}>
+            {item.sub_categories.map((sub_item) => {
+                return <SubCategoryItem
+                    key={sub_item.uuid}
+                    item={sub_item}
+                    api={api}
+                    updateList={updateList}
+                />
             })}
-        </div>
+        </div>:null}
     </div>
+}
+
+export interface SubCategoryItemProps {
+    item:SubCategoryRecord,
+    api:Category,
+    updateList: () => void,
+};
+export function SubCategoryItem(props:SubCategoryItemProps){
+    const {item, api, updateList} = props;
+    
+    const deleteSubItem = useCallback(async () => {
+        const deleted = await api.delete_sub(item.uuid);
+        updateList();
+    }, [item, api]);
+    const updateSubItem = useCallback(async () => {
+        const updated = await api.update_sub();
+        updateList();
+    }, []);
+
+    return (<div key={item.uuid}>
+        Title: <input 
+            defaultValue={item.title}
+        /> 
+        Color: <input
+            defaultValue={item.color}
+        />
+        <button 
+            onClick={deleteSubItem}
+        > Delete </button>
+    </div>)
 }

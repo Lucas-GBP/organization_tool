@@ -18,6 +18,9 @@ export interface CategoryAPI {
 export interface CategoryRecord extends CategoryAPI {
 }
 
+export interface SubCategoryRecord extends SubCategoryAPI{
+}
+
 export interface SubCategoryIntegratedPost {
     title:string;
     color:ColorType;

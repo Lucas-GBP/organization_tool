@@ -10,7 +10,6 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from alembic_utils.pg_view import PGView
-from sqlalchemy import text as sql_text
 
 # revision identifiers, used by Alembic.
 revision: str = '46a916801fd8'
@@ -26,7 +25,7 @@ def upgrade() -> None:
         signature="time_range_event_not_deleted",
         definition='SELECT id, uuid, user_id, category_id, sub_category_id, title, description, start_time, end_time \nFROM time_range_event \nWHERE time_range_event.deleted_at IS NULL'
     )
-    op.create_entity(public_time_range_event_not_deleted)
+    op.create_entity(public_time_range_event_not_deleted) # type: ignore[attr-defined]
 
     # ### end Alembic commands ###
 
@@ -38,6 +37,6 @@ def downgrade() -> None:
         signature="time_range_event_not_deleted",
         definition='SELECT id, uuid, user_id, category_id, sub_category_id, title, description, start_time, end_time \nFROM time_range_event \nWHERE time_range_event.deleted_at IS NULL'
     )
-    op.drop_entity(public_time_range_event_not_deleted)
+    op.drop_entity(public_time_range_event_not_deleted) # type: ignore[attr-defined]
 
     # ### end Alembic commands ###
