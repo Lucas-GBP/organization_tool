@@ -1,4 +1,5 @@
-from ._base import Base, uuid_column
+from ._base import Base
+from backend.db.utils import uuid_column
 from uuid import UUID as pyUUID
 from sqlalchemy import Integer
 from sqlalchemy.orm import Mapped, mapped_column

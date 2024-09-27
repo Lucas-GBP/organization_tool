@@ -1,5 +1,5 @@
 from ._base import BaseDao
-from backend.models import Category as CategoryModel, User as UserModel
+from backend.db import Category as CategoryModel, User as UserModel
 from backend.schemas import (
     CategoryRecord, 
     CategoryPost, 

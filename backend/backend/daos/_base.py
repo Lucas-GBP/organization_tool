@@ -1,7 +1,7 @@
 from typing import Generic, Type, TypeVar
 from uuid import UUID
 
-from backend.models._base import Base as BaseModel
+from backend.db.tables._base import Base as BaseModel
 from backend.schemas._base import BaseRecord
 
 ModelType = TypeVar("ModelType", bound=BaseModel)

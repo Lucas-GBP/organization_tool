@@ -1,11 +1,10 @@
 import { Base } from "./_base";
-import { UUID } from "crypto";
+import type { UUID } from "crypto";
 import type { CategoryRecord, CategoryPost } from "./types/category";
 
 export class Category extends Base {
     public constructor(){
-        super();
-        this.http = this.http+"category/";
+        super("category/");
     }
 
     public async get(uuid:UUID): Promise<CategoryRecord> {

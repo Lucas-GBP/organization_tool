@@ -2,7 +2,7 @@ from uuid import UUID
 from sqlalchemy.sql import select, insert, delete
 
 from ._base import BaseDao
-from backend.models import SubCategory as SubCategoryModel, Category as CategoryModel
+from backend.db.models import SubCategory as SubCategoryModel, Category as CategoryModel
 from backend.schemas import SubCategoryRecord, SubCategoryPost, SubCategoryIntegratedPost
 from backend.api.session import AsyncSession
 
@@ -28,19 +28,18 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryRecord]):
         db: AsyncSession,
         category_uuid: UUID
     ):
-        result = None
-        statement = select(self.model).where(
-            self.model.category_id == select(CategoryModel.id).where(
-                CategoryModel.uuid == category_uuid
-            ).scalar_subquery()
-        )
         try:
+            result = None
+            statement = select(self.model).where(
+                self.model.category_id == select(CategoryModel.id).where(
+                    CategoryModel.uuid == category_uuid
+                ).scalar_subquery()
+            )
             result = (await db.execute(statement)).all()
+            for category in result:
+                yield self.schemaRecord.model_validate(category[0])
         except Exception as e:
             print(e)
-
-        for category in result:
-            yield self.schemaRecord.model_validate(category[0])
     
     async def post(
         self,

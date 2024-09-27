@@ -1,17 +1,19 @@
-from ._base import Base, uuid_column, hex_color_column, CheckColorHex
 from uuid import UUID as pyUUID
 from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .category import Category
+from ._base import Base
+from backend.db.utils import uuid_column, hex_color_column, CheckColorHex
+from .user import User
 
-class SubCategory(Base):
+class Category(Base):
     id:Mapped[int] = mapped_column(Integer, primary_key=True)
     uuid:Mapped[pyUUID] = uuid_column()
-    category_id:Mapped[int] = mapped_column(ForeignKey(f"{Category.__tablename__}.id", ondelete="CASCADE"))
+    user_id:Mapped[int] = mapped_column(ForeignKey(User.id, ondelete="CASCADE"))
 
     title:Mapped[str]
     color:Mapped[str|None] = hex_color_column()
+    description:Mapped[str|None]
 
     __table_args__ = (
         CheckColorHex("color"),

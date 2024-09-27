@@ -4,8 +4,8 @@ export class Base {
     protected base_URL = "http://127.0.0.1:8888/";
     protected http = this.base_URL;
 
-    public constructor(){
-
+    public constructor(url?:string){
+        this.http = this.http+url;
     }
 
     protected fetch(input:string, init?:RequestInit): Promise<Response>{
