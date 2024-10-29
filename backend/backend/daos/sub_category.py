@@ -6,10 +6,10 @@ from backend.db.models import (
     SubCategory as SubCategoryModel, 
     Category as CategoryModel
 )
-from backend.schemas import SubCategoryRecord, SubCategoryPost, SubCategoryIntegratedPost, SubCategoryPatch
+from backend.schemas import SubCategoryTable, SubCategoryPost, SubCategoryIntegratedPost, SubCategoryPatch
 from backend.api.session import AsyncSession
 
-class SubCategory(BaseDao[SubCategoryModel, SubCategoryRecord]):    
+class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):    
     async def get_all(
         self,
         db: AsyncSession,
@@ -100,5 +100,5 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryRecord]):
 
 
 sub_category = SubCategory(
-    SubCategoryModel, SubCategoryRecord
+    SubCategoryModel, SubCategoryTable
 )

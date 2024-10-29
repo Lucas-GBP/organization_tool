@@ -1,2 +1,2 @@
-from backend.models.utils import function_entity
+from backend.db.utils import function_entity
 

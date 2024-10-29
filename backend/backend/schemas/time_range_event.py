@@ -4,7 +4,28 @@ from datetime import datetime
 from ._base import BaseRecord, BaseModel
 
 
-class TimeRangeEventRecord(BaseRecord):
+"""
+    HTTP Operations
+"""
+
+"""
+    Database Operations
+"""
+class TimeRangeEventNotDeleted(BaseModel):
+    uuid:UUID
+
+    user_id:int
+    category_id:int|None
+    sub_category_id:int|None
+    title:str|None
+    description:str|None
+    start_time:datetime
+    end_time:datetime|None
+
+"""
+    Database Objects
+"""
+class TimeRangeEventTable(BaseRecord):
     id:int
     uuid:UUID
 
@@ -18,19 +39,8 @@ class TimeRangeEventRecord(BaseRecord):
 
     deleted_at:datetime|None
 
-class TimeRangeEventNotDeleted(BaseModel):
-    uuid:UUID
 
-    user_id:int
-    category_id:int|None
-    sub_category_id:int|None
-    title:str|None
-    description:str|None
-    start_time:datetime
-    end_time:datetime|None
-
-
-class TimeRangeEventNotDeletedRecord(BaseRecord):
+class TimeRangeEventNotDeletedView(BaseRecord):
     id:int
     uuid:UUID
 

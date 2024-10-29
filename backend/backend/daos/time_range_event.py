@@ -4,10 +4,13 @@ from backend.db.models import (
     TimeRangeEventNotDeleted
 )
 from backend.schemas import (
-    TimeRangeEventRecord
+    TimeRangeEventTable
 )
 
-class TimeRangeEventDao(BaseDao[TimeRangeEvent, TimeRangeEventRecord]):
+class TimeRangeEventDao(BaseDao[TimeRangeEvent, TimeRangeEventTable]):
     ...
 
-time_range_event = TimeRangeEventNotDeleted()
+time_range_event = TimeRangeEventDao(
+    model=TimeRangeEvent,
+    schemaRecord=TimeRangeEventTable
+)

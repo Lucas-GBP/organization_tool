@@ -1,17 +1,17 @@
 from ._base import BaseDao
 from backend.db.models import Category as CategoryModel, User as UserModel
 from backend.schemas import (
-    CategoryRecord,
-    CategoryWithSubCategoryRecord,
+    CategoryTable,
+    CategoryWithSubCategoryComposed,
     CategoryPost, 
     CategoryPatch, 
 )
 from uuid import UUID
-from backend import daos
+import backend.daos as daos
 from sqlalchemy.sql import select, insert, update
 from backend.api.session import AsyncSession
 
-class Category(BaseDao[CategoryModel, CategoryRecord]): 
+class Category(BaseDao[CategoryModel, CategoryTable]): 
     async def get_all(
         self,
         db: AsyncSession,
@@ -44,7 +44,7 @@ class Category(BaseDao[CategoryModel, CategoryRecord]):
                 async for sub_category in sub_category_generator:
                     item.sub_categories.append(sub_category)
                 
-                yield CategoryWithSubCategoryRecord.model_validate(item)
+                yield CategoryWithSubCategoryComposed.model_validate(item)
         except Exception as e:
             print(f'Failed to get with subcategory and {self.model.__tablename__}: {e}')
             raise e
@@ -62,7 +62,7 @@ class Category(BaseDao[CategoryModel, CategoryRecord]):
                 async for sub_category in sub_category_generator:
                     category.sub_categories.append(sub_category)
             
-            return CategoryWithSubCategoryRecord.model_validate(category)
+            return CategoryWithSubCategoryComposed.model_validate(category)
         except Exception as e:
             raise e
 
@@ -110,5 +110,5 @@ class Category(BaseDao[CategoryModel, CategoryRecord]):
     
 category = Category(
     model=CategoryModel,
-    schemaRecord=CategoryRecord
+    schemaRecord=CategoryTable
 )

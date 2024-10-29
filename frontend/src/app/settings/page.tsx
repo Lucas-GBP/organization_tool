@@ -49,16 +49,13 @@ export default function Page(){
     }, [context, context?.user_uuid])
 
     useEffect(() => {
-        if (!context || !context?.user_uuid) {
-            console.warn("(useEffect) -> Without context or user_uuid");
-            return;
-        };
+        if (!context || !context?.user_uuid) { return; };
 
         try{
             getData()
         } catch (e){
             console.error(e);
-            setData([]);
+            setData(new Map());
         }
     }, [context])
 
@@ -67,10 +64,10 @@ export default function Page(){
             <h1>Settings</h1>
             <section>
                 <h2>Categories</h2>
-                {data.map((item) => {
+                {data.keys().map((uuid) => {
                     return <CategoryItem
-                        key={item.uuid}
-                        item={item}
+                        key={uuid}
+                        item={data.get(uuid)!}
                         api={categoryRepository.current}
                         updateList={getData}
                     />

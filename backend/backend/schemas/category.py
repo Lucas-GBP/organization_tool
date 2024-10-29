@@ -1,9 +1,30 @@
 from uuid import UUID
 
 from ._base import BaseRecord, BaseModel
-from .sub_category import SubCategoryIntegratedPost, SubCategory, SubCategoryRecord
+from .sub_category import SubCategoryIntegratedPost, SubCategory, SubCategoryTable
 from .utils import ColorField
 
+"""
+    HTTP Operations
+"""
+class CategoryPost(BaseModel):
+    user_uuid:UUID
+    color:str|None = ColorField()
+    title:str
+    description:str|None = None
+
+class CategoryWithSubCategoryPost(CategoryPost):
+    sub_categories:list[SubCategoryIntegratedPost]|None = None
+
+class CategoryPatch(BaseModel):
+    uuid:UUID
+    color:str|None = ColorField()
+    title:str|None
+    description:str|None
+
+"""
+    Database Operations
+"""
 class Category(BaseModel):
     uuid:UUID
     color:str|None = ColorField()
@@ -12,8 +33,19 @@ class Category(BaseModel):
 
 class CategoryWithSubCategory(Category):
     sub_categories:list[SubCategory]|None = None
+class CategoryCreate(CategoryPost):
+    color:str|None = ColorField()
+    title:str
+    description:str|None = None
+class CategoryUpdate(BaseModel):
+    color:str|None = ColorField()
+    title:str|None
+    description:str|None
 
-class CategoryRecord(BaseRecord):
+"""
+    Database Objects
+"""
+class CategoryTable(BaseRecord):
     id:int
     uuid:UUID
     user_id:int
@@ -30,8 +62,11 @@ class CategoryRecord(BaseRecord):
             description=self.description
         )
 
-class CategoryWithSubCategoryRecord(CategoryRecord):
-    sub_categories:list[SubCategoryRecord]|None = None
+"""
+    Multiples db Objects Composed
+"""
+class CategoryWithSubCategoryComposed(CategoryTable):
+    sub_categories:list[SubCategoryTable]|None = None
 
     def to_base_model(self) -> CategoryWithSubCategory:
         sub_categories_list:list[SubCategory]|None = None
@@ -47,18 +82,3 @@ class CategoryWithSubCategoryRecord(CategoryRecord):
             description=self.description,
             sub_categories=sub_categories_list
         )
-
-class CategoryPost(BaseModel):
-    user_uuid:UUID
-    color:str|None = ColorField()
-    title:str
-    description:str|None = None
-
-class CategoryWithSubCategoryPost(CategoryPost):
-    sub_categories:list[SubCategoryIntegratedPost]|None = None
-
-class CategoryPatch(BaseModel):
-    uuid:UUID
-    color:str|None = ColorField()
-    title:str|None
-    description:str|None
