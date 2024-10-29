@@ -1,5 +1,5 @@
 import { Base } from "./_base";
-import { UUID } from "crypto";
+import type { UUID } from "crypto";
 import type { CategoryRecord, CategoryPost } from "./types/category";
 
 export class Category extends Base {
