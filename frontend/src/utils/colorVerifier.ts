@@ -1,3 +1,3 @@
-export function color_verifier(color:string){
-    return color
+export function color_verifier(color: string) {
+    return color;
 }

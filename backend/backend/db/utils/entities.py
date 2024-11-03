@@ -5,7 +5,14 @@ from alembic_utils.pg_view import PGView
 
 from .base import Base, BaseView
 
-def view_entity(tabelView:BaseView, statement:Select|str):
+#
+# Basic entities
+#
+def view_entity(
+    tabelView:str|type[BaseView], 
+    statement:Select|str,
+    schema:str = "public"
+) -> PGView:
     """
     Esta função cria uma visualização em PostgreSQL a partir de uma tabela e um statement SQL.
 
@@ -18,25 +25,29 @@ def view_entity(tabelView:BaseView, statement:Select|str):
     Retorno:
     - PGView: Um objeto que representa a visualização PostgreSQL, contendo o esquema, assinatura e definição da visualização.
     """
-    table_name = str(tabelView.__tablename__)
-    if isinstance(statement, str):
-        query = statement
+    if isinstance(tabelView, str):
+        table_name = tabelView
     else:
-        query = str(statement).replace(table_name+".", "").replace(", "+table_name, "").replace(table_name+", ", "")
+        table_name = str(tabelView.__tablename__)
+    
+    if isinstance(statement, str):
+        definition = statement
+    else:
+        definition = str(statement).replace(table_name+".", "").replace(", "+table_name, "")
 
     return PGView(
-        schema="public",
+        schema=schema,
         signature=table_name,
-        definition=query,
+        definition=definition,
     )
 
 def trigger_entity(
     signature:str,
+    on_entity:str|type[Base],
     definition:str,
-    on_entity:str|Base,
     schema:str = "public",
-    is_constrain:bool = False
-):
+    is_constraint:bool = False
+) -> PGTrigger:
     if isinstance(on_entity, str):
         entity_name = on_entity
     else:
@@ -47,16 +58,18 @@ def trigger_entity(
         definition=definition,
         on_entity=entity_name,
         schema=schema,
-        is_constraint=is_constrain
+        is_constraint=is_constraint
     )
 
 def function_entity(
     signature:str,
     definition:str,
     schema:str = "public"
-):
+) -> PGFunction:
+    definition_formated = definition
+
     return PGFunction(
         signature=signature,
-        definition=definition,
+        definition=definition_formated,
         schema=schema
     )

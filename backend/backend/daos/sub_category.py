@@ -41,13 +41,17 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
         Post a single subgategory
         """
         try:
+            # Seleciona o `id` da categoria com o `uuid` correspondente
+            category_id_subquery = select(CategoryModel.id).where(
+                CategoryModel.uuid == data.category_uuid
+            ).scalar_subquery()
+            # Usa a subquery como o valor de `category_id`
             statement = insert(self.model).values(
-                self.model.category_id == select(CategoryModel.id).where(
-                    CategoryModel.uuid == data.category_uuid
-                ).scalar_subquery(),
-                title = data.title,
-                color = data.color
+                category_id=category_id_subquery,
+                title=data.title,
+                color=data.color
             )
+
             result = (await db.execute(statement)).first()
             return self.schemaRecord.model_validate(result[0]) if result else None
         except Exception as e:
@@ -89,7 +93,7 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
             ).where(
                 self.model.uuid == data.uuid
             ).values(
-                data
+                data.model_dump(exclude_unset=True)
             ).returning(self.model)
             result = (await db.execute(statement)).all()
 

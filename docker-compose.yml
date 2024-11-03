@@ -4,7 +4,7 @@ services:
     env_file:
       - ".env"
     ports:
-      - "${PORT_DATABASE}:${PORT_DATABASE}"
+      - "${POSTGRES_PORT}:${PORT_DATABASE}"
     volumes:
       - "./database:/app"
       - "./database/app:${PGDATA}"
@@ -15,6 +15,7 @@ services:
       dockerfile: "database.dockerfile"
       network: "host"
   backend:
+    command: poetry run uvicorn --reload --host 0.0.0.0 --port ${PORT_BACKEND} --loop uvloop --log-level info backend.api:app
     image: "backend:latest"
     env_file:
       - ".env"

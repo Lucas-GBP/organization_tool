@@ -98,7 +98,7 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
             ).where(
                 self.model.uuid == data.uuid
             ).values(
-                data
+                data.model_dump(exclude_unset=True)
             ).returning(self.model)
             result = (await db.execute(statement)).all()
 

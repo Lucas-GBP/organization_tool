@@ -25,8 +25,11 @@ class BaseDao(Generic[ModelType, SchemaType]):
 
     async def delete(self, db:AsyncSession, uuid:UUID):
         try:
+            if not hasattr(self.model, 'uuid'):
+                raise AttributeError(f"{self.model.__tablename__} does not have a 'uuid' field.")
+
             statement = delete(self.model).where(
-                self.model.uuid == uuid
+                self.model.uuid == uuid # type: ignore
             )
             await db.execute(statement)
             await db.commit()
@@ -36,11 +39,13 @@ class BaseDao(Generic[ModelType, SchemaType]):
         
     async def get(self, db: AsyncSession, uuid: UUID):
         try:
+            if not hasattr(self.model, 'uuid'):
+                raise AttributeError(f"{self.model.__tablename__} does not have a 'uuid' field.")
+
             statement = select(self.model).where(
-                self.model.uuid == uuid
+                self.model.uuid == uuid # type: ignore
             )
             result = (await db.execute(statement)).first()
-
             return self.schemaRecord.model_validate(result[0]) if result else None
         except Exception as e:
             print(f"Failed to get {self.model.__tablename__}: {e}")

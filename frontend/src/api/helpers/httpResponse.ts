@@ -7,17 +7,16 @@ export class HTTPResponse<T> {
         this._data = data;
         this._status = status;
     }
-  
+
     public get url(): string {
         return this._url;
     }
-  
+
     public get data(): T {
         return this._data;
     }
-  
+
     public get status(): number {
         return this._status;
     }
 }
-  

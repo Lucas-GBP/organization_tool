@@ -3,7 +3,6 @@
 docker-stack.yml
 # Frontend
 frontend/node_modules
-frontend/package-lock.json
 frontend/node_modules
 frontend/.pnp
 frontend/.pnp.js
