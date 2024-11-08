@@ -7,8 +7,10 @@ from backend.schemas import (
     CategoryPost,
     CategoryWithSubCategoryPost,
     CategoryPatch,
+    SubCategory,
     SubCategoryPost,
     SubCategoryPatch,
+    CategoryWithSubCategoryComposed
 )
 from backend.api.session import get_session, AsyncSession
 
@@ -18,7 +20,7 @@ router = APIRouter()
 async def get_category(
     uuid:UUID,
     Session: AsyncSession = Depends(get_session)
-):
+) -> Category|None:
     async with Session as db, db.begin():
         result = await daos.category.get(db,
             uuid=uuid
@@ -30,7 +32,7 @@ async def get_category(
 async def post_content(
     Session: AsyncSession = Depends(get_session),
     data:CategoryPost = Body(...)
-):
+) -> Category|None:
     async with Session as db, db.begin():
         new_category = await daos.category.post(db, data)
 
@@ -40,7 +42,7 @@ async def post_content(
 async def path_content(
     Session: AsyncSession = Depends(get_session),
     data:CategoryPatch = Body(...)
-):
+) -> Category|None:
     async with Session as db, db.begin():
         patched = await daos.category.patch(db, data)
     return patched.to_base_model() if patched else None
@@ -49,17 +51,17 @@ async def path_content(
 async def delete_content(
     uuid:UUID,
     Session: AsyncSession = Depends(get_session),
-):
+) -> None:
     async with Session as db, db.begin():
-        deleted = await daos.category.delete(db, uuid)
-    
-    return deleted
+        await daos.category.delete(db, uuid)
+
+        return
 
 @router.get("/all/{user_uuid}")
 async def get_all_content(
     user_uuid:UUID,
     Session: AsyncSession = Depends(get_session)
-):
+) -> list[Category]:
     content_list:list[Category] = []
     async with Session as db, db.begin():
         generator = daos.category.get_all(db,
@@ -73,7 +75,7 @@ async def get_all_content(
 async def get_sub_category(
     uuid:UUID,
     Session: AsyncSession = Depends(get_session)
-):
+) -> SubCategory|None:
     async with Session as db, db.begin():
         result = await daos.sub_category.get(db,
             uuid=uuid
@@ -85,7 +87,7 @@ async def get_sub_category(
 async def post_sub_category(
     Session: AsyncSession = Depends(get_session),
     data:SubCategoryPost = Body(...)
-):
+) -> SubCategory|None:
     async with Session as db, db.begin():
         posted = await daos.sub_category.post(db, data)
 
@@ -95,26 +97,26 @@ async def post_sub_category(
 async def patch_sub_category(
     Session: AsyncSession = Depends(get_session),
     data: SubCategoryPatch = Body(...)
-):
+) -> SubCategory|None:
     async with Session as db, db.begin():
         patched = await daos.sub_category.patch(db, data)
-    return patched
+    return patched.to_base_model() if patched else None
 
 @router.delete("/subcategory/{uuid}")
 async def delete_sub_category(
     uuid: UUID,
     Session: AsyncSession = Depends(get_session)
-):
+) -> None:
     async with Session as db, db.begin():
-        deleted = await daos.sub_category.delete(db, uuid)
+        await daos.sub_category.delete(db, uuid)
 
-        return deleted
+    return
     
 @router.get("/complety/{uuid}")
 async def get_complety(
     uuid:UUID,
     Session: AsyncSession = Depends(get_session),
-):
+) -> CategoryWithSubCategoryComposed|None:
     async with Session as db, db.begin():
         completed_category = await daos.category.get_with_subcategory(db, uuid)
     return completed_category
@@ -123,7 +125,7 @@ async def get_complety(
 async def post_complety(
     Session: AsyncSession = Depends(get_session),
     data:CategoryWithSubCategoryPost = Body(...)
-):
+) -> None:
     async with Session as db, db.begin():
         return None
 
@@ -131,7 +133,7 @@ async def post_complety(
 async def get_complety_all(
     uuid:UUID,
     Session: AsyncSession = Depends(get_session),
-):
+) -> list[CategoryWithSubCategory]:
     async with Session as db, db.begin():
         categories:list[CategoryWithSubCategory] = []
         category_generator = daos.category.get_all_with_subcategory(db, uuid)

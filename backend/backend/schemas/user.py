@@ -31,7 +31,7 @@ class UserTable(BaseRecord):
     uuid:UUID
     name:str
 
-    def to_base_model(self):
+    def to_base_model(self) -> User:
         return User(
             name=self.name,
             uuid=self.uuid

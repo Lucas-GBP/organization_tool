@@ -1,6 +1,6 @@
 from sqlalchemy import CheckConstraint
 
-def CheckColorHex(column_name:str, nullable:bool = True):
+def CheckColorHex(column_name:str, nullable:bool = True) -> CheckConstraint:
     checkName = "check_color_hex"
     if nullable:
         return CheckConstraint(

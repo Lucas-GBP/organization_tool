@@ -1,4 +1,5 @@
 from uuid import UUID
+from typing import AsyncGenerator
 from sqlalchemy.sql import select, insert, delete, update
 
 from ._base import BaseDao
@@ -14,7 +15,7 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
         self,
         db: AsyncSession,
         category_uuid: UUID
-    ):
+    ) -> AsyncGenerator[SubCategoryTable, None]:
         """
         get all subcategory itens from a category
         """
@@ -36,7 +37,7 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
         self,
         db: AsyncSession,
         data: SubCategoryPost
-    ):
+    ) -> SubCategoryTable|None:
         """
         Post a single subgategory
         """
@@ -63,7 +64,7 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
         db:AsyncSession,
         data:list[SubCategoryIntegratedPost],
         category_uuid:UUID
-    ):
+    ) -> AsyncGenerator[SubCategoryTable, None]:
         """
         post a list of sub_category in a single category
         """
@@ -86,7 +87,7 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
         self, 
         db:AsyncSession, 
         data: SubCategoryPatch
-    ):
+    ) -> SubCategoryTable|None:
         try:
             statement = update(
                 self.model

@@ -46,7 +46,7 @@ class SubCategoryTable(BaseRecord):
     color:str = ColorField()
 
     title:str    
-    def to_base_model(self):
+    def to_base_model(self) -> SubCategory:
         return SubCategory(
             uuid=self.uuid,
             title=self.title,

@@ -1,7 +1,8 @@
+from typing import Any
 from sqlalchemy import CheckConstraint
 from sqlalchemy.orm import MappedColumn
 
-def CheckColorHex(column:str|MappedColumn, nullable:bool = True):
+def CheckColorHex(column:str|MappedColumn[Any], nullable:bool = True) -> CheckConstraint:
     STRING_COLOR_FORMAT = r" ~* '^#[a-f0-9]{6}$')"
     if isinstance(column, str):
         column_name = column

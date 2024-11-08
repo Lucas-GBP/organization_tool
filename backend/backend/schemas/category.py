@@ -54,7 +54,7 @@ class CategoryTable(BaseRecord):
     color:str|None = ColorField()
     description:str|None
 
-    def to_base_model(self):
+    def to_base_model(self) -> Category:
         return Category(
             uuid=self.uuid,
             color=self.color,

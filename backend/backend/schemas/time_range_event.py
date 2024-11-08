@@ -52,7 +52,7 @@ class TimeRangeEventNotDeletedView(BaseRecord):
     start_time:datetime
     end_time:datetime|None
 
-    def to_base_model(self):
+    def to_base_model(self) -> TimeRangeEventNotDeleted:
         return TimeRangeEventNotDeleted(
             uuid=self.uuid,
             user_id=self.user_id,

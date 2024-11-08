@@ -2,7 +2,7 @@ from typing import Any
 from pydantic import Field
 from pydantic_core import PydanticUndefined
 
-def ColorField(default:Any = PydanticUndefined):
+def ColorField(default:Any = PydanticUndefined) -> Any:
     return Field(
         max_length=7, 
         min_length=7, 

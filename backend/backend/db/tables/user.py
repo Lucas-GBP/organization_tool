@@ -6,4 +6,5 @@ from sqlalchemy.orm import Mapped, mapped_column
 class User(Base):
     id:Mapped[int] = primary_id_column()
     uuid:Mapped[UUID] = uuid_column()
-    name:Mapped[str] = mapped_column(String)
+    nickname:Mapped[str] = mapped_column(String)
+    hashed_password:Mapped[str] = mapped_column(String)

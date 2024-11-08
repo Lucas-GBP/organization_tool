@@ -1,4 +1,5 @@
 from ._base import BaseDao
+from typing import AsyncGenerator, Any
 from backend.db.models import Category as CategoryModel, User as UserModel
 from backend.schemas import (
     CategoryTable,
@@ -16,7 +17,7 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
         self,
         db: AsyncSession,
         user_uuid:UUID
-    ):
+    ) -> AsyncGenerator[CategoryTable, None]:
         try:
             statement = select(self.model).where(
                 self.model.user_id == select(UserModel.id).where(
@@ -35,16 +36,17 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
         self,
         db: AsyncSession,
         user_uuid:UUID
-    ):
+    ) -> AsyncGenerator[CategoryWithSubCategoryComposed, None]:
         try:
             category_generator = self.get_all(db, user_uuid)
             async for item in category_generator:
-                item.sub_categories = []
-                sub_category_generator = daos.sub_category.get_all(db, item.uuid)
+                completed_item = CategoryWithSubCategoryComposed.model_validate(item)
+                completed_item.sub_categories = []
+                sub_category_generator = daos.sub_category.get_all(db, completed_item.uuid)
                 async for sub_category in sub_category_generator:
-                    item.sub_categories.append(sub_category)
+                    completed_item.sub_categories.append(sub_category)
                 
-                yield CategoryWithSubCategoryComposed.model_validate(item)
+                yield completed_item
         except Exception as e:
             print(f'Failed to get with subcategory and {self.model.__tablename__}: {e}')
             raise e
@@ -53,16 +55,18 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
         self,
         db: AsyncSession,
         user_uuid:UUID
-    ):
+    ) -> CategoryWithSubCategoryComposed|None:
         try:
             category = await self.get(db, user_uuid)
+            completed_category = None
             if category is not None:
-                category.sub_categories = []
-                sub_category_generator = daos.sub_category.get_all(db, category.uuid)
+                completed_category = CategoryWithSubCategoryComposed.model_validate(category)
+                completed_category.sub_categories = []
+                sub_category_generator = daos.sub_category.get_all(db, completed_category.uuid)
                 async for sub_category in sub_category_generator:
-                    category.sub_categories.append(sub_category)
+                    completed_category.sub_categories.append(sub_category)
             
-            return CategoryWithSubCategoryComposed.model_validate(category)
+            return completed_category
         except Exception as e:
             raise e
 
@@ -70,7 +74,7 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
         self,
         db: AsyncSession,
         data: CategoryPost
-    ):
+    ) -> (CategoryTable|None):
         try:
             statement = insert(self.model).values(
                 color = data.color,
@@ -91,7 +95,7 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
         self,
         db: AsyncSession,
         data: CategoryPatch
-    ):
+    ) -> (CategoryTable | None):
         try:
             statement = update(
                 self.model

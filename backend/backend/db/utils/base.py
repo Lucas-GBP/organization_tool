@@ -23,3 +23,5 @@ class BaseView(DeclarativeBase):
         name = sub(r"(.)([A-Z][a-z]+)", r"\1_\2", cls.__name__)
         name = sub(r"([a-z0-9])([A-Z])", r"\1_\2", name).lower()
         return name
+    
+__all__ = ["Base", "BaseView"]

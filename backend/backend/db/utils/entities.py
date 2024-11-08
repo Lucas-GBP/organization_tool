@@ -1,3 +1,4 @@
+from typing import Any
 from sqlalchemy import Select
 from alembic_utils.pg_function import PGFunction
 from alembic_utils.pg_trigger import PGTrigger
@@ -10,7 +11,7 @@ from .base import Base, BaseView
 #
 def view_entity(
     tabelView:str|type[BaseView], 
-    statement:Select|str,
+    statement:Select[Any]|str,
     schema:str = "public"
 ) -> PGView:
     """

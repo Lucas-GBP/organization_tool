@@ -23,7 +23,7 @@ class BaseDao(Generic[ModelType, SchemaType]):
         self.model = model
         self.schemaRecord = schemaRecord
 
-    async def delete(self, db:AsyncSession, uuid:UUID):
+    async def delete(self, db:AsyncSession, uuid:UUID) -> None:
         try:
             if not hasattr(self.model, 'uuid'):
                 raise AttributeError(f"{self.model.__tablename__} does not have a 'uuid' field.")
@@ -37,7 +37,7 @@ class BaseDao(Generic[ModelType, SchemaType]):
             print(f"Failed to delete {self.model.__tablename__}: {e}")
             raise e
         
-    async def get(self, db: AsyncSession, uuid: UUID):
+    async def get(self, db: AsyncSession, uuid: UUID) -> SchemaType|None:
         try:
             if not hasattr(self.model, 'uuid'):
                 raise AttributeError(f"{self.model.__tablename__} does not have a 'uuid' field.")
