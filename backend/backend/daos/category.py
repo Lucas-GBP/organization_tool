@@ -1,5 +1,12 @@
-from ._base import BaseDao
+from uuid import UUID
 from typing import AsyncGenerator, Any
+
+from backend.daos.utils.base import BaseDao
+from backend.daos.utils.exeptions import (
+    FailuredToPost,
+    FailureToPatch,
+    ItemNotFound
+)
 from backend.db.models import Category as CategoryModel, User as UserModel
 from backend.schemas import (
     CategoryTable,
@@ -7,7 +14,6 @@ from backend.schemas import (
     CategoryPost, 
     CategoryPatch, 
 )
-from uuid import UUID
 import backend.daos as daos
 from sqlalchemy.sql import select, insert, update
 from backend.api.session import AsyncSession
@@ -55,7 +61,7 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
         self,
         db: AsyncSession,
         user_uuid:UUID
-    ) -> CategoryWithSubCategoryComposed|None:
+    ) -> CategoryWithSubCategoryComposed:
         try:
             category = await self.get(db, user_uuid)
             completed_category = None
@@ -65,6 +71,8 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
                 sub_category_generator = daos.sub_category.get_all(db, completed_category.uuid)
                 async for sub_category in sub_category_generator:
                     completed_category.sub_categories.append(sub_category)
+            else:
+                raise ItemNotFound()
             
             return completed_category
         except Exception as e:
@@ -74,7 +82,7 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
         self,
         db: AsyncSession,
         data: CategoryPost
-    ) -> (CategoryTable|None):
+    ) -> CategoryTable:
         try:
             statement = insert(self.model).values(
                 color = data.color,
@@ -86,7 +94,10 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
             ).returning(self.model)
 
             result = (await db.execute(statement)).first()
-            return self.schemaRecord.model_validate(result[0]) if result else None
+            if result is None or len(result) <= 0:
+                raise FailuredToPost()
+
+            return self.schemaRecord.model_validate(result[0])
         except Exception as e:
             print(f'Failed to create {self.model.__tablename__}: {e}')
             raise e
@@ -95,7 +106,7 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
         self,
         db: AsyncSession,
         data: CategoryPatch
-    ) -> (CategoryTable | None):
+    ) -> CategoryTable:
         try:
             statement = update(
                 self.model
@@ -104,9 +115,12 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
             ).values(
                 data.model_dump(exclude_unset=True)
             ).returning(self.model)
-            result = (await db.execute(statement)).all()
 
-            return self.schemaRecord.model_validate(result[0]) if result else None
+            result = (await db.execute(statement)).all()
+            if result is None or len(result) <= 0:
+                raise FailureToPatch()
+
+            return self.schemaRecord.model_validate(result[0])
         except Exception as e:
             print(f'Failed to patch {self.model.__tablename__}: {e}')
             raise e

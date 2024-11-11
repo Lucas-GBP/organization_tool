@@ -15,6 +15,7 @@ export class Base {
             };
         }
 
+        
         return fetch(this.http + input, init);
     }
 }

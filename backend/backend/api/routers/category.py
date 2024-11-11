@@ -20,32 +20,32 @@ router = APIRouter()
 async def get_category(
     uuid:UUID,
     Session: AsyncSession = Depends(get_session)
-) -> Category|None:
+) -> Category:
     async with Session as db, db.begin():
         result = await daos.category.get(db,
             uuid=uuid
         )
-
-    return result.to_base_model() if result else None
+        
+        return result.to_base_model()
 
 @router.post("/")
 async def post_content(
     Session: AsyncSession = Depends(get_session),
     data:CategoryPost = Body(...)
-) -> Category|None:
+) -> Category:
     async with Session as db, db.begin():
         new_category = await daos.category.post(db, data)
 
-    return new_category.to_base_model() if new_category else None
+    return new_category.to_base_model()
 
 @router.patch("/")
 async def path_content(
     Session: AsyncSession = Depends(get_session),
     data:CategoryPatch = Body(...)
-) -> Category|None:
+) -> Category:
     async with Session as db, db.begin():
         patched = await daos.category.patch(db, data)
-    return patched.to_base_model() if patched else None
+    return patched.to_base_model()
 
 @router.delete("/{uuid}")
 async def delete_content(
@@ -75,32 +75,32 @@ async def get_all_content(
 async def get_sub_category(
     uuid:UUID,
     Session: AsyncSession = Depends(get_session)
-) -> SubCategory|None:
+) -> SubCategory:
     async with Session as db, db.begin():
         result = await daos.sub_category.get(db,
             uuid=uuid
         )
 
-    return result.to_base_model() if result else None
+    return result.to_base_model()
 
 @router.post("/subcategory")
 async def post_sub_category(
     Session: AsyncSession = Depends(get_session),
     data:SubCategoryPost = Body(...)
-) -> SubCategory|None:
+) -> SubCategory:
     async with Session as db, db.begin():
         posted = await daos.sub_category.post(db, data)
 
-    return posted.to_base_model() if posted else None
+    return posted.to_base_model()
 
 @router.patch("/subcategory")
 async def patch_sub_category(
     Session: AsyncSession = Depends(get_session),
     data: SubCategoryPatch = Body(...)
-) -> SubCategory|None:
+) -> SubCategory:
     async with Session as db, db.begin():
         patched = await daos.sub_category.patch(db, data)
-    return patched.to_base_model() if patched else None
+    return patched.to_base_model()
 
 @router.delete("/subcategory/{uuid}")
 async def delete_sub_category(
@@ -116,7 +116,7 @@ async def delete_sub_category(
 async def get_complety(
     uuid:UUID,
     Session: AsyncSession = Depends(get_session),
-) -> CategoryWithSubCategoryComposed|None:
+) -> CategoryWithSubCategoryComposed:
     async with Session as db, db.begin():
         completed_category = await daos.category.get_with_subcategory(db, uuid)
     return completed_category

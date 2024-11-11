@@ -2,7 +2,11 @@ from uuid import UUID
 from typing import AsyncGenerator
 from sqlalchemy.sql import select, insert, delete, update
 
-from ._base import BaseDao
+from .utils.base import BaseDao
+from backend.daos.utils.exeptions import (
+    FailuredToPost,
+    FailureToPatch
+)
 from backend.db.models import (
     SubCategory as SubCategoryModel, 
     Category as CategoryModel
@@ -37,7 +41,7 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
         self,
         db: AsyncSession,
         data: SubCategoryPost
-    ) -> SubCategoryTable|None:
+    ) -> SubCategoryTable:
         """
         Post a single subgategory
         """
@@ -54,7 +58,10 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
             )
 
             result = (await db.execute(statement)).first()
-            return self.schemaRecord.model_validate(result[0]) if result else None
+            if result is None or len(result) <= 0:
+                raise FailuredToPost
+
+            return self.schemaRecord.model_validate(result[0])
         except Exception as e:
             print(f"Exception: {e}")
             raise e
@@ -87,7 +94,7 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
         self, 
         db:AsyncSession, 
         data: SubCategoryPatch
-    ) -> SubCategoryTable|None:
+    ) -> SubCategoryTable:
         try:
             statement = update(
                 self.model
@@ -96,9 +103,12 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
             ).values(
                 data.model_dump(exclude_unset=True)
             ).returning(self.model)
-            result = (await db.execute(statement)).all()
 
-            return self.schemaRecord.model_validate(result[0]) if result else None
+            result = (await db.execute(statement)).all()
+            if result is None or len(result) <= 0:
+                raise FailureToPatch
+
+            return self.schemaRecord.model_validate(result[0])
         except Exception as e:
             print(f"Exception: {e}")
             raise e

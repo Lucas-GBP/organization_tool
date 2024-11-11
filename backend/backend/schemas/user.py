@@ -7,19 +7,21 @@ from uuid import UUID
 """
 class UserGet(BaseModel):
     uuid:UUID
-    name:str
+    nickname:str
 class UserPost(BaseModel):
-    name:str
+    nickname:str
+    password: str
 class UserPatch(BaseModel):
-    name:str|None
+    nickname:str|None
 
 """
     Database Operations
 """
 class User(UserGet):
     ...
-class UserCreate(UserPost):
-    ...
+class UserCreate(BaseModel):
+    nickname:str
+    hashed_password:str
 class UserUpdate(UserPatch):
     ...
 
@@ -29,10 +31,11 @@ class UserUpdate(UserPatch):
 class UserTable(BaseRecord):
     id:int
     uuid:UUID
-    name:str
+    nickname:str
+    hashed_password:str
 
     def to_base_model(self) -> User:
         return User(
-            name=self.name,
+            nickname=self.nickname,
             uuid=self.uuid
         )
