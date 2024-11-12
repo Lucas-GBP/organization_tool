@@ -1,22 +1,41 @@
-from fastapi import APIRouter, Depends, Body, HTTPException
+from typing import Any
+from fastapi import APIRouter, Depends, status, HTTPException, Response
 from backend import schemas, daos
-from backend.db import models
 from backend.core import hash_password
 from backend.api.session import get_session, AsyncSession
 from backend.daos.utils import exeptions as dao_exeptions
 
 router = APIRouter()
 
-@router.get("/test")
+@router.get("/test",
+    responses={
+        status.HTTP_200_OK: {
+            "model": schemas.User
+        },
+        status.HTTP_201_CREATED: {
+            "description": "Usuário criado.",
+            "model": schemas.User
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description":"Algum erro aconteceu."
+        },
+        status.HTTP_503_SERVICE_UNAVAILABLE: {
+            "description": "Não foi possivel criar o usuário.",
+
+        }
+    }
+)
 async def get_login_test(
-    Session: AsyncSession = Depends(get_session),
+    response: Response,
+    Session: AsyncSession = Depends(get_session)
 ) -> schemas.User:
     NICKNAME:str = "Lucas"
     PASSWORD:str = "#5TPd42ç"
     async with Session as db, db.begin():
         try:
             user = await daos.user.get_by_nickname(db, NICKNAME)
-            print(f"user: {user}")
+
+            response.status_code = status.HTTP_200_OK
             return user.to_base_model()
         except dao_exeptions.ItemNotFound:
             try:
@@ -27,13 +46,15 @@ async def get_login_test(
                         hashed_password=hash
                     )
                 )
+                
+                response.status_code = status.HTTP_201_CREATED
                 return new_user.to_base_model()
             except Exception as inst:
-                print(inst)
                 raise HTTPException(
-                    status_code=503, detail="Serviço indisponível. Tente novamente mais tarde."
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE, 
+                    detail="Serviço indisponível. Tente novamente mais tarde."
                 )
         except:
             raise HTTPException(
-                status_code=500
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
