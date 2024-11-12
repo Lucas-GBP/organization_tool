@@ -29,7 +29,7 @@ export function CategoryItem(props: CategoryItemProps) {
         <div className={style.categoryItem}>
             Title: <input defaultValue={item.title} /> Color: <input defaultValue={item.color} />
             <button onClick={deleteItem}>Delete</button>
-            {item.sub_categories.length > 0 ? (
+            {item.sub_categories !== undefined ? (
                 <div className={style.subCategorySection}>
                     {item.sub_categories.map((sub_item) => {
                         return (

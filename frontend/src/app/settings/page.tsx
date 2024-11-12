@@ -66,13 +66,17 @@ export default function Page() {
         }
     }, [context, getData]);
 
+    useEffect(() => {
+        console.warn(data)
+    }, [data]);
+
     return (
         <>
             <main>
                 <h1>Settings</h1>
                 <section>
                     <h2>Categories</h2>
-                    {data.keys().map((uuid) => {
+                    {Array.from(data.keys()).map((uuid) => {
                         return (
                             <CategoryItem
                                 key={uuid}
