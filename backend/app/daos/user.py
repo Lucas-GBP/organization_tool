@@ -1,6 +1,6 @@
 from sqlalchemy.sql import select, insert, delete, update
 
-from backend import schemas
+from app import schemas
 from app.db import tables
 from app.schemas import UserTable as UserSchema
 from app.db.tables import User as UserModel
