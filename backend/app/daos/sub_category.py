@@ -3,16 +3,16 @@ from typing import AsyncGenerator
 from sqlalchemy.sql import select, insert, delete, update
 
 from .utils.base import BaseDao
-from backend.daos.utils.exeptions import (
+from app.daos.utils.exeptions import (
     FailuredToPost,
     FailureToPatch
 )
-from backend.db.models import (
+from app.db.models import (
     SubCategory as SubCategoryModel, 
     Category as CategoryModel
 )
-from backend.schemas import SubCategoryTable, SubCategoryPost, SubCategoryIntegratedPost, SubCategoryPatch
-from backend.api.session import AsyncSession
+from app.schemas import SubCategoryTable, SubCategoryPost, SubCategoryIntegratedPost, SubCategoryPatch
+from app.api.session import AsyncSession
 
 class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):    
     async def get_all(

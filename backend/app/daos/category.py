@@ -1,22 +1,22 @@
 from uuid import UUID
 from typing import AsyncGenerator, Any
 
-from backend.daos.utils.base import BaseDao
-from backend.daos.utils.exeptions import (
+from app.daos.utils.base import BaseDao
+from app.daos.utils.exeptions import (
     FailuredToPost,
     FailureToPatch,
     ItemNotFound
 )
-from backend.db.models import Category as CategoryModel, User as UserModel
-from backend.schemas import (
+from app.db.models import Category as CategoryModel, User as UserModel
+from app.schemas import (
     CategoryTable,
     CategoryWithSubCategoryComposed,
     CategoryPost, 
     CategoryPatch, 
 )
-import backend.daos as daos
+import app.daos as daos
 from sqlalchemy.sql import select, insert, update
-from backend.api.session import AsyncSession
+from app.api.session import AsyncSession
 
 class Category(BaseDao[CategoryModel, CategoryTable]): 
     async def get_all(

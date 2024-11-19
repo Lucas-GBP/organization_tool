@@ -1,4 +1,4 @@
-from backend.db.utils import (
+from app.db.utils import (
     Base, 
     BaseView, 
     primary_id_column,

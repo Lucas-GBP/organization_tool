@@ -1,5 +1,5 @@
-from backend.db.utils import Base, primary_id_column
-from backend.db.tables import User
+from app.db.utils import Base, primary_id_column
+from app.db.tables import User
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 

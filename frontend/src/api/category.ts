@@ -1,4 +1,4 @@
-import { Base } from "./_base";
+import { Base } from "./helpers/base";
 import type { UUID } from "crypto";
 import type { CategoryRecord, CategoryPost } from "./types/category";
 

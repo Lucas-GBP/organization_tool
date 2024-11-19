@@ -1,5 +1,5 @@
 from typing import Type, TypeVar
-from backend.db.utils.base import Base as BaseModel, BaseView as BaseMovelView
+from app.db.utils.base import Base as BaseModel, BaseView as BaseMovelView
 
 ModelType = TypeVar("ModelType", bound=BaseModel|BaseMovelView)
 

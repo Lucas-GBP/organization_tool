@@ -1,9 +1,9 @@
 from typing import Any
 from fastapi import APIRouter, Depends, status, HTTPException, Response
-from backend import schemas, daos
-from backend.core import hash_password
-from backend.api.session import get_session, AsyncSession
-from backend.daos.utils import exeptions as dao_exeptions
+from app import schemas, daos
+from app.core import hash_password
+from app.api.session import get_session, AsyncSession
+from app.daos.utils import exeptions as dao_exeptions
 
 router = APIRouter()
 
@@ -29,8 +29,8 @@ async def get_login_test(
     response: Response,
     Session: AsyncSession = Depends(get_session)
 ) -> schemas.User:
-    NICKNAME:str = "Lucas"
-    PASSWORD:str = "#5TPd42ç"
+    NICKNAME = "Lucas"
+    PASSWORD = "#5TPd42ç"
     async with Session as db, db.begin():
         try:
             user = await daos.user.get_by_nickname(db, NICKNAME)
@@ -49,12 +49,14 @@ async def get_login_test(
                 
                 response.status_code = status.HTTP_201_CREATED
                 return new_user.to_base_model()
-            except Exception as inst:
+            except Exception as e:
+                print(e)
                 raise HTTPException(
                     status_code=status.HTTP_503_SERVICE_UNAVAILABLE, 
                     detail="Serviço indisponível. Tente novamente mais tarde."
                 )
-        except:
+        except Exception as e:
+            print(e)
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

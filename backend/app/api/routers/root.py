@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from backend.api.session import get_session, AsyncSession
+from app.api.session import get_session, AsyncSession
 from sqlalchemy import text
 
 router = APIRouter()

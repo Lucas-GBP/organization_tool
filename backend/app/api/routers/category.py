@@ -1,7 +1,7 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, Body
-from backend import daos
-from backend.schemas import (
+from app import daos
+from app.schemas import (
     Category,
     CategoryWithSubCategory,
     CategoryPost,
@@ -12,7 +12,7 @@ from backend.schemas import (
     SubCategoryPatch,
     CategoryWithSubCategoryComposed
 )
-from backend.api.session import get_session, AsyncSession
+from app.api.session import get_session, AsyncSession
 
 router = APIRouter()
 

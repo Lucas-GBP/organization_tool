@@ -1,4 +1,4 @@
-FROM docker.io/node:21.7-alpine AS base
+FROM docker.io/node:21.7-alpine3.20 AS base
 
 # Install dependencies only when needed
 FROM base AS deps

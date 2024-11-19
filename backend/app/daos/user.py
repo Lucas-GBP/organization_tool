@@ -1,15 +1,15 @@
 from sqlalchemy.sql import select, insert, delete, update
 
 from backend import schemas
-from backend.db import tables
-from backend.schemas import UserTable as UserSchema
-from backend.db.tables import User as UserModel
-from backend.daos.utils import BaseDao
-from backend.daos.utils.exeptions import (
+from app.db import tables
+from app.schemas import UserTable as UserSchema
+from app.db.tables import User as UserModel
+from app.daos.utils import BaseDao
+from app.daos.utils.exeptions import (
     FailuredToPost,
     ItemNotFound
 )
-from backend.api.session import AsyncSession
+from app.api.session import AsyncSession
 
 class User(BaseDao[tables.User, schemas.UserTable]):
     async def create(

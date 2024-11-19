@@ -12,7 +12,7 @@ export interface CategoryAPI {
     title: string;
     description: string;
     color: ColorType;
-    sub_categories: SubCategoryAPI[];
+    sub_categories?: SubCategoryAPI[];
 }
 
 export interface CategoryRecord extends CategoryAPI {}

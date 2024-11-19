@@ -33,7 +33,7 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry install
 
 # magic trick to execute fastApi
-#CMD ["poetry", "run", "uvicorn", "--reload", "--host", "0.0.0.0", "--port", "8888", "--loop", "uvloop", "--log-level", "info", "backend.api:app"]
-#CMD ["poetry", "run", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8888"]
+#CMD ["poetry", "run", "uvicorn", "--reload", "--host", "0.0.0.0", "--port", "8888", "--loop", "uvloop", "--log-level", "info", "app.api:app"]
+#CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8888"]
 
 EXPOSE ${PORT_BACKEND}

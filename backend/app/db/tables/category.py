@@ -2,7 +2,7 @@ from uuid import UUID
 from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.orm import MappedColumn as Mapped, mapped_column
 
-from backend.db.utils import Base, uuid_column, primary_id_column, hex_color_column, CheckColorHex
+from app.db.utils import Base, uuid_column, primary_id_column, hex_color_column, CheckColorHex
 from .user import User
 
 class Category(Base):

@@ -1,9 +1,9 @@
 from .utils.base import BaseDao
-from backend.db.models import (
+from app.db.models import (
     TimeRangeEvent,
     TimeRangeEventNotDeleted
 )
-from backend.schemas import (
+from app.schemas import (
     TimeRangeEventTable
 )
 

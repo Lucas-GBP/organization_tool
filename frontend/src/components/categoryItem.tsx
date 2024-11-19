@@ -13,7 +13,6 @@ export interface CategoryItemProps {
 export function CategoryItem(props: CategoryItemProps) {
     const { item, api, updateList } = props;
     //const context = useContext(PageContext);
-    item.color = "#aa";
 
     const deleteItem = useCallback(async () => {
         const deleted = await api.delete(item.uuid);

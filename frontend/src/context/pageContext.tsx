@@ -21,7 +21,6 @@ export const PageProvider = ({ children }: PropsWithChildren) => {
     }, []);
 
     useEffect(() =>{
-        // on client side mount, set starting value
         if (user == undefined){
             get_user();
         }
@@ -30,9 +29,6 @@ export const PageProvider = ({ children }: PropsWithChildren) => {
             user_uuid: user?.uuid
         });
     }, [user]);
-    useEffect(() => {
-        console.log({value})
-    }, [value])
 
     return <PageContext.Provider value={value}>{children}</PageContext.Provider>;
 };

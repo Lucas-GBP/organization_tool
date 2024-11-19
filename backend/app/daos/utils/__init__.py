@@ -1,8 +1,8 @@
-from backend.daos.utils.base import (
+from app.daos.utils.base import (
     BaseDao
 )
 
-from backend.daos.utils.exeptions import (
+from app.daos.utils.exeptions import (
     ItemNotFound,
     FailuredToPost,
     FailureToPatch,

@@ -33,7 +33,6 @@ export default function Page() {
 
     const getData = useCallback(async () => {
         if (!context || !context?.user_uuid) {
-            console.warn("Without context or user_uuid");
             return;
         }
 

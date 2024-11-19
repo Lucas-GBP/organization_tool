@@ -2,9 +2,9 @@ from typing import Generic, Type, TypeVar, Any
 from uuid import UUID
 from sqlalchemy.sql import select, insert, delete, update
 
-from backend.db.utils.base import Base as BaseModel, BaseView as BaseMovelView
-from backend.schemas._base import BaseRecord
-from backend.api.session import AsyncSession
+from app.db.utils.base import Base as BaseModel, BaseView as BaseMovelView
+from app.schemas._base import BaseRecord
+from app.api.session import AsyncSession
 
 from .exeptions import (
     ItemNotFound, MissingUUID

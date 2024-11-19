@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import ForeignKey, DateTime, select
 from sqlalchemy.orm import mapped_column, MappedColumn as Mapped
 
-from backend.db.utils import (
+from app.db.utils import (
     Base, BaseView,
     uuid_column, primary_id_column,
     view_entity
