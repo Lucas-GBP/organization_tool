@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
+from app.db import tables
 from app.api.session import get_session, AsyncSession
-from sqlalchemy import text
+from sqlalchemy import select
 
 router = APIRouter()
 
@@ -10,8 +11,9 @@ async def root(
 ) -> str:
     try:
         async with Session as db, db.begin():
-            test = (await db.execute(text("select * from  \"user\";"))).first()
-            print(f"Conexão estabelecida com sucesso: {test}")
+            statement = select(tables.User)
+            result = (await db.execute(statement)).first()
+            print(f"Conexão estabelecida com sucesso: {result}")
     except Exception as e:
         print(f'Erro ao conectar: {e}')
 

@@ -1,9 +1,7 @@
-from sqlalchemy.sql import select, insert, delete, update
+from sqlalchemy.sql import select, insert
 
 from app import schemas
 from app.db import tables
-from app.schemas import UserTable as UserSchema
-from app.db.tables import User as UserModel
 from app.daos.utils import BaseDao
 from app.daos.utils.exeptions import (
     FailuredToPost,

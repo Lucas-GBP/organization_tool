@@ -15,7 +15,7 @@ services:
       dockerfile: "database.dockerfile"
       network: "host"
   backend:
-    command: poetry run uvicorn --reload --host 0.0.0.0 --port ${PORT_BACKEND} --loop uvloop --log-level info backend.api:app
+    command: poetry run uvicorn --reload --host 0.0.0.0 --port ${PORT_BACKEND} --loop uvloop --log-level info app.api:app
     image: "backend:latest"
     env_file:
       - ".env"
