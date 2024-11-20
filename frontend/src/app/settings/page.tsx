@@ -46,8 +46,8 @@ export default function Page() {
             return;
         }
 
-        const post_data: CategoryPost = standart_post_data(context.user_uuid);
-        const result = await categoryRepository.current.post(post_data);
+        const post_data = standart_post_data(context.user_uuid);
+        const result = await categoryRepository.current.post_all(post_data);
         console.log({ result });
         getData();
     }, [context, getData]);
@@ -69,25 +69,21 @@ export default function Page() {
         console.warn(data)
     }, [data]);
 
-    return (
-        <>
-            <main>
-                <h1>Settings</h1>
-                <section>
-                    <h2>Categories</h2>
-                    {Array.from(data.keys()).map((uuid) => {
-                        return (
-                            <CategoryItem
-                                key={uuid}
-                                item={data.get(uuid)!}
-                                api={categoryRepository.current}
-                                updateList={getData}
-                            />
-                        );
-                    })}
-                </section>
-                <button onClick={postData}>Post Data</button>
-            </main>
-        </>
-    );
+    return (<main>
+        <h1>Settings</h1>
+        <section>
+            <h2>Categories</h2>
+            {Array.from(data.keys()).map((uuid) => {
+                return (
+                    <CategoryItem
+                        key={uuid}
+                        item={data.get(uuid)!}
+                        api={categoryRepository.current}
+                        updateList={getData}
+                    />
+                );
+            })}
+        </section>
+        <button onClick={postData}>Post Data</button>
+    </main>);
 }

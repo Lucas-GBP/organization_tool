@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from app.db import tables
 from app.api.session import get_session, AsyncSession
 from sqlalchemy import select
@@ -7,6 +7,7 @@ router = APIRouter()
 
 @router.get("/")
 async def root(
+    response: Response,
     Session: AsyncSession = Depends(get_session)
 ) -> str:
     try:

@@ -2,7 +2,6 @@ import { createContext, useState, useEffect, PropsWithChildren, useCallback } fr
 import { UUID } from "crypto";
 import { Login } from "@/api/login";
 import type { UserRecord } from "@/api/types/login";
-import { userAgent } from "next/server";
 
 export interface PageContextType {
     user_uuid?: UUID;

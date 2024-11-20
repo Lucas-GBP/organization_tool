@@ -125,9 +125,11 @@ async def get_complety(
 async def post_complety(
     Session: AsyncSession = Depends(get_session),
     data:CategoryWithSubCategoryPost = Body(...)
-) -> None:
+) -> CategoryWithSubCategory:
     async with Session as db, db.begin():
-        return None
+        new_category = await daos.category.post(db, data)
+
+    return new_category.to_base_model()
 
 @router.get("/complety/all/{uuid}")
 async def get_complety_all(

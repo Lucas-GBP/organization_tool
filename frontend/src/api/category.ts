@@ -23,9 +23,9 @@ export class Category extends Base {
         return response.json();
     }
 
-    public async post(post_data: CategoryPost): Promise<CategoryRecord> {
+    public async post_all(post_data: CategoryPost): Promise<CategoryRecord> {
         const data = JSON.stringify(post_data);
-        const response = await this.fetch("", {
+        const response = await this.fetch("complety/", {
             method: "POST",
             body: data,
         });
