@@ -30,6 +30,7 @@ services:
       dockerfile: "backend.dockerfile"
       network: "host"
   frontend:
+    command: npm run dev
     image: "frontend:latest"
     env_file:
       - ".env"
@@ -38,7 +39,6 @@ services:
     environment:
       - NODE_ENV=development 
       - WATCHPACK_POLLING=true
-    command: npm run dev
     volumes:
       - "./frontend:/app"
     networks:

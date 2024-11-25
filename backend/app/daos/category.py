@@ -12,7 +12,8 @@ from app.schemas import (
     CategoryTable,
     CategoryWithSubCategoryComposed,
     CategoryPost, 
-    CategoryPatch, 
+    CategoryPatch,
+    CategoryWithSubCategoryPost
 )
 import app.daos as daos
 from sqlalchemy.sql import select, insert, update
@@ -101,7 +102,7 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
         except Exception as e:
             print(f'Failed to create {self.model.__tablename__}: {e}')
             raise e
-        
+
     async def patch(
         self,
         db: AsyncSession,

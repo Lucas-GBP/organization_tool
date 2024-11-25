@@ -15,15 +15,15 @@ export class Category extends Base {
         return response.json();
     }
 
-    public async get_all(user_uuid: UUID): Promise<CategoryRecord[]> {
-        const response = await this.fetch("all/" + user_uuid, {
+    public async get_all_completed(user_uuid: UUID): Promise<CategoryRecord[]> {
+        const response = await this.fetch("complety/all/" + user_uuid, {
             method: "GET",
         });
 
         return response.json();
     }
 
-    public async post_all(post_data: CategoryPost): Promise<CategoryRecord> {
+    public async post_completed(post_data: CategoryPost): Promise<CategoryRecord> {
         const data = JSON.stringify(post_data);
         const response = await this.fetch("complety/", {
             method: "POST",

@@ -36,7 +36,7 @@ export default function Page() {
             return;
         }
 
-        const category_list = await categoryRepository.current.get_all(context.user_uuid);
+        const category_list = await categoryRepository.current.get_all_completed(context.user_uuid);
         setData(arrayToMap(category_list));
     }, [context]);
 
@@ -47,7 +47,7 @@ export default function Page() {
         }
 
         const post_data = standart_post_data(context.user_uuid);
-        const result = await categoryRepository.current.post_all(post_data);
+        const result = await categoryRepository.current.post_completed(post_data);
         console.log({ result });
         getData();
     }, [context, getData]);

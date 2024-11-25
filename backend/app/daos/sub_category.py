@@ -55,7 +55,7 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
                 category_id=category_id_subquery,
                 title=data.title,
                 color=data.color
-            )
+            ).returning(self.model)
 
             result = (await db.execute(statement)).first()
             if result is None or len(result) <= 0:

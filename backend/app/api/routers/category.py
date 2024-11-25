@@ -127,9 +127,25 @@ async def post_complety(
     data:CategoryWithSubCategoryPost = Body(...)
 ) -> CategoryWithSubCategory:
     async with Session as db, db.begin():
+        sub_categories:list[SubCategory]|None = None
         new_category = await daos.category.post(db, data)
+        if data.sub_categories is not None:
+            sub_categories = []
+            for sub in data.sub_categories:
+                new_sub_category = await daos.sub_category.post(db, SubCategoryPost(
+                    category_uuid=new_category.uuid,
+                    color=sub.color,
+                    title=sub.title
+                ))
+                sub_categories.append(new_sub_category.to_base_model())
 
-    return new_category.to_base_model()
+        return CategoryWithSubCategory(
+            title=new_category.title,
+            uuid=new_category.uuid,
+            description=new_category.description,
+            color=new_category.color,
+            sub_categories=sub_categories
+        )
 
 @router.get("/complety/all/{uuid}")
 async def get_complety_all(
