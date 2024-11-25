@@ -3,8 +3,8 @@ import type { UUID } from "crypto";
 import type { CategoryRecord, CategoryPost } from "./types/category";
 
 export class Category extends Base {
-    public constructor() {
-        super("category/");
+    public constructor(user_uuid: UUID) {
+        super("category/", user_uuid);
     }
 
     public async get(uuid: UUID): Promise<CategoryRecord> {
@@ -15,8 +15,8 @@ export class Category extends Base {
         return response.json();
     }
 
-    public async get_all_completed(user_uuid: UUID): Promise<CategoryRecord[]> {
-        const response = await this.fetch("complety/all/" + user_uuid, {
+    public async get_all_completed(): Promise<CategoryRecord[]> {
+        const response = await this.fetch("complety/all/" + this.user_uuid, {
             method: "GET",
         });
 

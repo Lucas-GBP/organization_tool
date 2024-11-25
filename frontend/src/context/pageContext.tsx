@@ -1,10 +1,12 @@
 import { createContext, useState, useEffect, PropsWithChildren, useCallback } from "react";
 import { UUID } from "crypto";
-import { Login } from "@/api/login";
+import { Login } from "@/api/helpers/login";
 import type { UserRecord } from "@/api/types/login";
+import { Repository } from "@/api";
 
 export interface PageContextType {
-    user_uuid?: UUID;
+    user_uuid: UUID;
+    repository:Repository;
 }
 
 export const PageContext = createContext<PageContextType | null>(null);
@@ -22,12 +24,17 @@ export const PageProvider = ({ children }: PropsWithChildren) => {
     useEffect(() =>{
         if (user == undefined){
             get_user();
+            return;
         }
 
         setValue({
-            user_uuid: user?.uuid
+            user_uuid: user.uuid,
+            repository: new Repository(user.uuid)
         });
     }, [user]);
+    useEffect(() => {
+
+    })
 
     return <PageContext.Provider value={value}>{children}</PageContext.Provider>;
 };

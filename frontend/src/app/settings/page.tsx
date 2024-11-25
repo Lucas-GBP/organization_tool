@@ -1,6 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, useContext, useCallback } from "react";
-import { Category } from "@/api/category";
+import { useEffect, useState, useContext, useCallback } from "react";
 import { CategoryItem } from "@/components";
 import type { CategoryRecord, CategoryPost } from "@/api/types/category";
 import { arrayToMap } from "@/utils/arrayToMap";
@@ -28,26 +27,27 @@ const standart_post_data = (uuid: UUID) => {
 
 export default function Page() {
     const context = useContext(PageContext);
-    const categoryRepository = useRef(new Category());
     const [data, setData] = useState<Map<UUID, CategoryRecord>>(new Map());
 
     const getData = useCallback(async () => {
-        if (!context || !context?.user_uuid) {
+        if (!context) {
             return;
         }
+        const {repository} = context;
 
-        const category_list = await categoryRepository.current.get_all_completed(context.user_uuid);
+        const category_list = await repository.category.get_all_completed();
         setData(arrayToMap(category_list));
     }, [context]);
 
     const postData = useCallback(async () => {
-        if (!context || !context?.user_uuid) {
+        if (!context) {
             console.warn("Without context or user_uuid");
             return;
         }
+        const {repository} = context;
 
         const post_data = standart_post_data(context.user_uuid);
-        const result = await categoryRepository.current.post_completed(post_data);
+        const result = await repository.category.post_completed(post_data);
         console.log({ result });
         getData();
     }, [context, getData]);
@@ -78,8 +78,8 @@ export default function Page() {
                     <CategoryItem
                         key={uuid}
                         item={data.get(uuid)!}
-                        api={categoryRepository.current}
                         updateList={getData}
+                        repository={context?.repository!}
                     />
                 );
             })}
