@@ -6,35 +6,32 @@ import { Repository } from "@/api";
 
 export interface PageContextType {
     user_uuid: UUID;
-    repository:Repository;
+    repository: Repository;
 }
 
 export const PageContext = createContext<PageContextType | null>(null);
 
 export const PageProvider = ({ children }: PropsWithChildren) => {
     const [value, setValue] = useState<PageContextType | null>(null);
-    const [user, setUser] = useState<UserRecord|undefined>(undefined);
+    const [user, setUser] = useState<UserRecord | undefined>(undefined);
 
     const get_user = useCallback(async () => {
-        const rep = new Login()
-        const login = await rep.get_test()
+        const rep = new Login();
+        const login = await rep.get_test();
         setUser(login);
     }, []);
 
-    useEffect(() =>{
-        if (user == undefined){
+    useEffect(() => {
+        if (user == undefined) {
             get_user();
             return;
         }
 
         setValue({
             user_uuid: user.uuid,
-            repository: new Repository(user.uuid)
+            repository: new Repository(user.uuid),
         });
-    }, [user]);
-    useEffect(() => {
-
-    })
+    }, [user, get_user]);
 
     return <PageContext.Provider value={value}>{children}</PageContext.Provider>;
 };

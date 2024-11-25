@@ -1,8 +1,8 @@
 import type { UUID } from "crypto";
 
 export interface UserAPI {
-    uuid: UUID,
-    nickname: string
-};
+    uuid: UUID;
+    nickname: string;
+}
 
-export interface UserRecord extends UserAPI {};
+export interface UserRecord extends UserAPI {}

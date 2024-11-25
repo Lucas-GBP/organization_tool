@@ -6,7 +6,7 @@ export const base_URL = "http://127.0.0.1:8888/";
 export class Base {
     protected base_URL = base_URL;
     protected http = this.base_URL;
-    protected user_uuid:UUID;
+    protected user_uuid: UUID;
 
     public constructor(endpoint: string, user_uuid: UUID) {
         this.http = this.http + endpoint;
@@ -20,7 +20,6 @@ export class Base {
             };
         }
 
-        
         return fetch(this.http + input, init);
     }
 }

@@ -2,8 +2,8 @@ import { Category } from "./category";
 import { UUID } from "crypto";
 
 export class Repository {
-    protected user_uuid:UUID;
-    public category:Category;
+    protected user_uuid: UUID;
+    public category: Category;
 
     public constructor(user_uuid: UUID) {
         this.user_uuid = user_uuid;

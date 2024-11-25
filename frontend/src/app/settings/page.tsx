@@ -33,7 +33,7 @@ export default function Page() {
         if (!context) {
             return;
         }
-        const {repository} = context;
+        const { repository } = context;
 
         const category_list = await repository.category.get_all_completed();
         setData(arrayToMap(category_list));
@@ -44,7 +44,7 @@ export default function Page() {
             console.warn("Without context or user_uuid");
             return;
         }
-        const {repository} = context;
+        const { repository } = context;
 
         const post_data = standart_post_data(context.user_uuid);
         const result = await repository.category.post_completed(post_data);
@@ -66,24 +66,26 @@ export default function Page() {
     }, [context, getData]);
 
     useEffect(() => {
-        console.warn(data)
+        console.warn(data);
     }, [data]);
 
-    return (<main>
-        <h1>Settings</h1>
-        <section>
-            <h2>Categories</h2>
-            {Array.from(data.keys()).map((uuid) => {
-                return (
-                    <CategoryItem
-                        key={uuid}
-                        item={data.get(uuid)!}
-                        updateList={getData}
-                        repository={context?.repository!}
-                    />
-                );
-            })}
-        </section>
-        <button onClick={postData}>Post Data</button>
-    </main>);
+    return (
+        <main>
+            <h1>Settings</h1>
+            <section>
+                <h2>Categories</h2>
+                {Array.from(data.keys()).map((uuid) => {
+                    return (
+                        <CategoryItem
+                            key={uuid}
+                            item={data.get(uuid)!}
+                            updateList={getData}
+                            repository={context?.repository!}
+                        />
+                    );
+                })}
+            </section>
+            <button onClick={postData}>Post Data</button>
+        </main>
+    );
 }
