@@ -1,0 +1,6 @@
+@use "../../variables.module";
+
+.inputFragment {
+    background-color: variables.$background_color;
+    color: variables.$text_color;
+}

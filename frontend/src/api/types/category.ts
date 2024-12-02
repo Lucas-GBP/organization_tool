@@ -12,10 +12,15 @@ export interface CategoryAPI {
     title: string;
     description: string;
     color: ColorType;
+}
+
+export interface CategoryCompletedAPI extends CategoryAPI {
     sub_categories?: SubCategoryAPI[];
 }
 
 export interface CategoryRecord extends CategoryAPI {}
+
+export interface CategotyCompletedRecord extends CategoryCompletedAPI {}
 
 export interface SubCategoryRecord extends SubCategoryAPI {}
 
@@ -32,14 +37,16 @@ export interface CategoryPost {
     sub_categories?: SubCategoryIntegratedPost[];
 }
 
-export interface SubCategoryPatch {
-    uuid: UUID;
-    title?: string;
-    color?: ColorType;
-}
 export interface CategoryPatch {
     uuid: UUID;
     color?: ColorType;
     title?: string;
     description?: string;
+}
+
+
+export interface SubCategoryPatch {
+    uuid: UUID;
+    title?: string;
+    color?: ColorType;
 }

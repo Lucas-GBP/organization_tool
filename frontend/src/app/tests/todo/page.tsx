@@ -12,7 +12,7 @@ const emptyTask: taskType = {
     completed: false,
 };
 
-function Page() {
+export default function Page() {
     const [task, setTask] = useState<taskType>(emptyTask);
     const [tasksMap, setTasksMap] = useState(new Map<number, taskType>());
 
@@ -77,5 +77,3 @@ function Page() {
         </>
     );
 }
-
-export default Page;

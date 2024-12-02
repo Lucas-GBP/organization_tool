@@ -117,7 +117,7 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
                 data.model_dump(exclude_unset=True)
             ).returning(self.model)
 
-            result = (await db.execute(statement)).all()
+            result = (await db.execute(statement)).one()
             if result is None or len(result) <= 0:
                 raise FailureToPatch()
 

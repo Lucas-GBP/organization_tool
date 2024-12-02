@@ -39,7 +39,7 @@ async def post_content(
     return new_category.to_base_model()
 
 @router.patch("/")
-async def path_content(
+async def patch_content(
     Session: AsyncSession = Depends(get_session),
     data:CategoryPatch = Body(...)
 ) -> Category:
@@ -71,14 +71,14 @@ async def get_all_content(
             content_list.append(item.to_base_model())
         return content_list
 
-@router.get("/subcategory/{uuid}")
+@router.get("/subcategory/{sub_uuid}")
 async def get_sub_category(
-    uuid:UUID,
+    sub_uuid:UUID,
     Session: AsyncSession = Depends(get_session)
 ) -> SubCategory:
     async with Session as db, db.begin():
         result = await daos.sub_category.get(db,
-            uuid=uuid
+            uuid=sub_uuid
         )
 
     return result.to_base_model()
@@ -112,6 +112,18 @@ async def delete_sub_category(
 
     return
     
+@router.get("/subcategory/all/{uuid}")
+async def get_all_sub(
+    uuid:UUID,
+    Session: AsyncSession = Depends(get_session)
+) -> list[SubCategory]:
+    async with Session as db, db.begin():
+        sub_categories:list[SubCategory] = []
+        sub_category_generator = daos.sub_category.get_all(db, uuid)
+        async for sub_category in sub_category_generator:
+            sub_categories.append(sub_category.to_base_model())
+        return sub_categories
+
 @router.get("/complety/{uuid}")
 async def get_complety(
     uuid:UUID,

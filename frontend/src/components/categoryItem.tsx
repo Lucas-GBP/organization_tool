@@ -1,10 +1,18 @@
 import style from "@/styles/components/categoryItem.module.scss";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 
-import { useCallback } from "react";
-
-import type { CategoryRecord, SubCategoryRecord } from "@/api/types/category";
+import type { 
+    CategoryRecord, 
+    SubCategoryRecord, 
+    CategotyCompletedRecord,
+    CategoryPatch
+} from "@/api/types/category";
 import type { Category } from "@/api/category";
 import { Repository } from "@/api";
+import { Input } from "@/components/fragments";
+import { ColorPicker } from "antd";
+import { AggregationColor } from "antd/es/color-picker/color";
+import { type Color, isValidColor } from "@/types/color";
 
 export interface CategoryItemProps {
     item: CategoryRecord;
@@ -12,33 +20,79 @@ export interface CategoryItemProps {
     repository: Repository;
 }
 export function CategoryItem(props: CategoryItemProps) {
-    const { item, updateList, repository } = props;
+    const { updateList, repository } = props;
+    const [category, setCategory] = useState<CategotyCompletedRecord>(props.item)
 
+    const getSubCategories = useCallback(async () => {
+        const sub_categories = await repository.category.get_sub_all(category.uuid)
+
+        setCategory({
+            ...category,
+            sub_categories: sub_categories,
+        });
+    }, [category])
     const deleteItem = useCallback(async () => {
-        const deleted = await repository.category.delete(item.uuid);
-        console.log(deleted);
+        const deleted = await repository.category.delete(category.uuid);
+
         updateList();
-    }, [item, updateList, repository]);
-    /*const updateItem = useCallback(async () => {
-        const updated = await api.update();
-        updateList();
-    }, [api, updateList]);*/
+        getSubCategories();
+    }, [category, updateList, repository]);
+    const updateItem = useCallback(async (data:CategoryPatch) => {
+        const updated = await repository.category.update(data);
+        setCategory({
+            ...updated,
+            sub_categories:category.sub_categories
+        })
+    }, [repository, updateList]);
+
+    const updateTitle = useCallback((e:ChangeEvent<HTMLInputElement>) => {
+        updateItem({
+            ...category,
+            title:e.target.value,
+        })
+    }, [updateItem])
+    const updateColor = useCallback((value: AggregationColor) => {
+        const color = value.toHexString();
+        console.log(color);
+        if(!isValidColor(color)){
+            return;
+        }
+
+        updateItem({
+            ...category,
+            color:color as Color,
+        })
+    }, [updateItem])
+
+    useEffect(()=> {
+        if(category.sub_categories == undefined){
+            getSubCategories();
+        }
+    }, [category])
+
 
     return (
-        <div className={style.categoryItem}>
-            Title: <input defaultValue={item.title} /> Color: <input defaultValue={item.color} />
+        <div className={style.categoryItem} key={"category:"+category.uuid}>
+            Title: <Input 
+                defaultValue={category.title}
+                onBlur={updateTitle}
+            /> 
+            Color: <ColorPicker 
+                defaultValue={category.color} 
+                onChangeComplete={updateColor}
+            />
             <button onClick={deleteItem}>Delete</button>
-            {item.sub_categories !== undefined && item.sub_categories.length > 0 ? (
+            {category.sub_categories !== undefined && category.sub_categories.length > 0 ? (
                 <div className={style.subCategorySection}>
-                    {item.sub_categories.map((sub_item) => {
+                    {category.sub_categories.map((sub_item) => {
                         return (
                             <SubCategoryItem
                                 key={sub_item.uuid}
                                 item={sub_item}
-                                updateList={updateList}
+                                updateList={getSubCategories}
                                 api={repository.category}
                             />
-                        );
+                        ); 
                     })}
                 </div>
             ) : null}
@@ -59,15 +113,15 @@ export function SubCategoryItem(props: SubCategoryItemProps) {
         console.log(deleted);
         updateList();
     }, [item, updateList, api]);
-    /*const updateSubItem = useCallback(async () => {
+    const updateSubItem = useCallback(async () => {
         const updated = await api.update_sub();
         updateList();
-    }, [api, updateList]);*/
+    }, [api, updateList]);
 
     return (
-        <div key={item.uuid}>
-            Title: <input defaultValue={item.title} />
-            Color: <input defaultValue={item.color} />
+        <div key={"sub_category:"+item.uuid}>
+            Title: <Input defaultValue={item.title} />
+            Color: <ColorPicker defaultValue={item.color} />
             <button onClick={deleteSubItem}> Delete </button>
         </div>
     );
