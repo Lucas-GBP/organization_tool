@@ -6,15 +6,7 @@ import { DetailedHTMLProps, InputHTMLAttributes } from "react";
 /*
 export interface InputProps extends AntInputProps {
 }*/
-export interface InputProps extends DetailedHTMLProps<
-    InputHTMLAttributes<HTMLInputElement>, 
-    HTMLInputElement
-> {
-
-}
-export function Input(props:InputProps) {
-    return <input 
-        {...props} 
-        className={style.inputFragment} 
-    />;
+export interface InputProps extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {}
+export function Input(props: InputProps) {
+    return <input {...props} className={style.inputFragment} />;
 }

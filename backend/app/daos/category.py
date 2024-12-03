@@ -1,5 +1,5 @@
 from uuid import UUID
-from typing import AsyncGenerator, Any
+from typing import AsyncGenerator
 
 from app.daos.utils.base import BaseDao
 from app.daos.utils.exeptions import (
@@ -12,8 +12,7 @@ from app.schemas import (
     CategoryTable,
     CategoryWithSubCategoryComposed,
     CategoryPost, 
-    CategoryPatch,
-    CategoryWithSubCategoryPost
+    CategoryPatch
 )
 import app.daos as daos
 from sqlalchemy.sql import select, insert, update

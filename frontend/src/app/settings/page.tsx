@@ -9,11 +9,11 @@ export default function Page() {
     return (
         <main>
             <h1>Settings</h1>
-            {context?.repository && context.user_uuid?
-            <CategoriesList
-                repository={context.repository}
-                user_uuid={context.user_uuid}
-            />:<span>Loading Context...</span>}
+            {context?.repository && context.user_uuid ? (
+                <CategoriesList repository={context.repository} user_uuid={context.user_uuid} />
+            ) : (
+                <span>Loading Context...</span>
+            )}
         </main>
     );
 }

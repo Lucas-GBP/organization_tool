@@ -22,7 +22,6 @@ export class Login {
         const response = await this.fetch("test/", {
             method: "GET",
         });
-        console.warn(response);
 
         return response.json();
     }

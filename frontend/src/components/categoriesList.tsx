@@ -1,68 +1,67 @@
 import { useEffect, useState, useCallback } from "react";
 import { CategoryItem } from "@/components";
-import type { CategoryRecord, CategoryPost } from "@/api/types/category";
+import type { CategoryPost, CategotyCompletedRecord } from "@/api/types/category";
 import { arrayToMap } from "@/utils/arrayToMap";
 import { UUID } from "crypto";
 import { Repository } from "@/api";
 
+const standart_post_data:CategoryPost = {
+    title: "New Category",
+    color: "#ffffff",
+    description: undefined,
+};
+
 export interface CategoriesListProps {
-    repository: Repository,
-    user_uuid: UUID
+    repository: Repository;
+    user_uuid: UUID;
 }
 export default function CategoriesList(props: CategoriesListProps) {
-    const {repository, user_uuid} = props;
-    const [categories, setCategories] = useState<Map<UUID, CategoryRecord>>(new Map());
+    const { repository, user_uuid } = props;
+    const [categories, setCategories] = useState<Map<UUID, CategotyCompletedRecord>>(new Map());
 
     const getData = useCallback(async () => {
-        const category_list = await repository.category.get_all();
+        const category_list = await repository.category.get_all_completed();
         setCategories(arrayToMap(category_list));
     }, [repository]);
+    const newCategory = useCallback(async () => {
+        const result = await repository.category.post_completed(standart_post_data);
+        
+        const new_map = new Map(categories)
+        new_map.set(result.uuid, result)
+        setCategories(new_map)
+    }, [repository, user_uuid, categories]);
+    const updateCategory = useCallback(
+        (uuid: UUID, new_category?: CategotyCompletedRecord) => {
+            const new_map = new Map(categories);
+            if (new_category == undefined) {
+                new_map.delete(uuid);
+            } else {
+                new_map.set(uuid, new_category);
+            }
 
-    const postData = useCallback(async () => {
-        const post_data = standart_post_data(user_uuid);
-        const result = await repository.category.post_completed(post_data);
-        console.log({ result });
-        getData();
-    }, [repository, user_uuid, getData]);
+            setCategories(new_map);
+        },
+        [categories, setCategories]
+    );
 
     useEffect(() => {
         getData();
-    }, [])
-    useEffect(() => {
-        console.warn(categories);
-    }, [categories]);
+    }, [getData]);
 
-    return <section>
-        <h2>Categories</h2>
-        {Array.from(categories.keys()).map((uuid) => {
-            return (
-                <CategoryItem
+    return (
+        <section>
+            <h2>Categories</h2>
+            <button onClick={newCategory}>New Category</button>
+            {Array.from(categories.keys()).map((uuid) => {
+                return (<CategoryItem
                     key={uuid}
-                    item={categories.get(uuid)!}
-                    updateList={getData}
+                    category={categories.get(uuid)!}
+                    setCategory={(new_category) => {
+                        updateCategory(uuid, new_category);
+                    }}
                     repository={repository!}
-                />
-            );
-        })}
-        <button onClick={postData}>Post Data</button>
-    </section>
+                />);
+            })}
+        </section>
+    );
 }
-
-const standart_post_data = (uuid: UUID) => {
-    return {
-        user_uuid: uuid,
-        title: "A NICE title",
-        color: "#ffffff",
-        description: "A very good description",
-        sub_categories: [
-            {
-                color: "#000000",
-                title: "A NICE sub title",
-            },
-            {
-                color: "#cecece",
-                title: "A NICE sub title",
-            },
-        ],
-    } as CategoryPost;
-};

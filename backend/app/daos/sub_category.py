@@ -1,6 +1,6 @@
 from uuid import UUID
 from typing import AsyncGenerator
-from sqlalchemy.sql import select, insert, delete, update
+from sqlalchemy.sql import select, insert, update
 
 from .utils.base import BaseDao
 from app.daos.utils.exeptions import (
@@ -104,7 +104,7 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
                 data.model_dump(exclude_unset=True)
             ).returning(self.model)
 
-            result = (await db.execute(statement)).all()
+            result = (await db.execute(statement)).one()
             if result is None or len(result) <= 0:
                 raise FailureToPatch
 
