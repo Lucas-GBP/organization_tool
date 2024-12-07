@@ -27,7 +27,7 @@ export class Category extends Base {
     public async post(data: CategoryPost): Promise<CategoryRecord> {
         const data_json = JSON.stringify({
             ...data,
-            user_uuid: this.user_uuid
+            user_uuid: this.user_uuid,
         });
 
         const response = await this.fetch("", {
@@ -122,7 +122,7 @@ export class Category extends Base {
     public async post_completed(post_data: CategoryCompletedPost): Promise<CategotyCompletedRecord> {
         const data = JSON.stringify({
             ...post_data,
-            user_uuid: this.user_uuid
+            user_uuid: this.user_uuid,
         });
         const response = await this.fetch("complety/", {
             method: "POST",

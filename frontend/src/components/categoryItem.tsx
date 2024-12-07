@@ -1,26 +1,31 @@
 import style from "@/styles/components/categoryItem.module.scss";
 import { ChangeEvent, useCallback, useEffect, useRef } from "react";
 
-import type { SubCategoryRecord, CategotyCompletedRecord, CategoryPatch, SubCategoryPatch, SubCategoryPost } from "@/api/types/category";
+import type {
+    SubCategoryRecord,
+    CategotyCompletedRecord,
+    CategoryPatch,
+    SubCategoryPatch,
+    SubCategoryPost,
+} from "@/api/types/category";
 import type { Category } from "@/api/category";
 import { Repository } from "@/api";
 import { Input } from "@/components/fragments";
 import { ColorPicker } from "antd";
 import { AggregationColor } from "antd/es/color-picker/color";
 import { type Color, isValidColor } from "@/types/color";
-import { UUID } from "crypto";
 
-const standart_sub_category_post = (category:CategotyCompletedRecord) => {
+const standart_sub_category_post = (category: CategotyCompletedRecord) => {
     return {
         category_uuid: category.uuid,
         color: category.color,
-        title: "New Sub Category"
+        title: "New Sub Category",
     } as SubCategoryPost;
-}
+};
 
 export interface CategoryItemProps {
     category: CategotyCompletedRecord;
-    setCategory: (new_category?: CategotyCompletedRecord) => void;
+    setCategory: (arg?: CategotyCompletedRecord) => void;
     repository: Repository;
 }
 export function CategoryItem(props: CategoryItemProps) {
@@ -34,7 +39,7 @@ export function CategoryItem(props: CategoryItemProps) {
             ...category,
             sub_categories: sub_categories,
         });
-    }, [repository, category]);
+    }, [repository, category, setCategory]);
     const deleteItem = useCallback(async () => {
         const deleted = await repository.category.delete(category.uuid);
 
@@ -52,14 +57,14 @@ export function CategoryItem(props: CategoryItemProps) {
     );
     const newSubCategory = useCallback(async () => {
         const new_sub = await repository.category.post_sub(category_post.current);
-        const category_copy = category
-        if (!category_copy.sub_categories){
-            category_copy.sub_categories = []
+        const category_copy = category;
+        if (!category_copy.sub_categories) {
+            category_copy.sub_categories = [];
         }
-        category_copy.sub_categories.push(new_sub)
+        category_copy.sub_categories.push(new_sub);
 
         setCategory(category_copy);
-    }, [repository, category, category_post]);
+    }, [repository, category, category_post, setCategory]);
 
     const updateSubCategory = useCallback(
         (index: number, new_sub?: SubCategoryRecord) => {
@@ -106,8 +111,8 @@ export function CategoryItem(props: CategoryItemProps) {
     );
 
     useEffect(() => {
-        category_post.current = standart_sub_category_post(category)
-    }, [category])
+        category_post.current = standart_sub_category_post(category);
+    }, [category]);
     useEffect(() => {
         if (category.sub_categories == undefined) {
             getSubCategories();
@@ -120,7 +125,7 @@ export function CategoryItem(props: CategoryItemProps) {
             Color: <ColorPicker defaultValue={category.color} onChangeComplete={updateColor} />
             <button onClick={deleteItem}>Delete</button>
             <button onClick={newSubCategory}>New Sub Category</button>
-            {category.sub_categories  && category.sub_categories.length > 0 ? (
+            {category.sub_categories && category.sub_categories.length > 0 ? (
                 <div className={style.subCategorySection}>
                     {category.sub_categories.map((sub_item, index) => {
                         return (
@@ -143,7 +148,7 @@ export function CategoryItem(props: CategoryItemProps) {
 export interface SubCategoryItemProps {
     item: SubCategoryRecord;
     api: Category;
-    updateList: (new_item?: SubCategoryRecord) => void;
+    updateList: (arg?: SubCategoryRecord) => void;
 }
 export function SubCategoryItem(props: SubCategoryItemProps) {
     const { updateList, api, item } = props;
