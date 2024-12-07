@@ -13,10 +13,11 @@ const standart_post_data: CategoryPost = {
 
 export interface CategoriesListProps {
     repository: Repository;
+    categorires: CategotyCompletedRecord[];
 }
-export default function CategoriesList(props: CategoriesListProps) {
+export function CategoriesList(props: CategoriesListProps) {
     const { repository } = props;
-    const [categories, setCategories] = useState<Map<UUID, CategotyCompletedRecord>>(new Map());
+    const [categories, setCategories] = useState<Map<UUID, CategotyCompletedRecord>>(arrayToMap(props.categorires));
 
     const getData = useCallback(async () => {
         const category_list = await repository.category.get_all_completed();
