@@ -1,5 +1,10 @@
 # Organization Tool
 
+Para começar o projeto você deve ter instalado o docker-compose e executar o seguinte comando:
+```bash
+docker-compose up --build -d
+```
+
 ## Database
 
 ### Atualizando o banco de dados
