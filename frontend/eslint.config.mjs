@@ -11,34 +11,36 @@ const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
     baseDirectory: __dirname,
     recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
+    allConfig: js.configs.all,
 });
 
-export default [...compat.extends(
-    "next/core-web-vitals",
-    "eslint:recommended",
-    "plugin:prettier/recommended",
-), {
-    plugins: {
-        prettier,
-        "@typescript-eslint": typescriptEslint,
-    },
+export default [
+    ...compat.extends("next/core-web-vitals", "eslint:recommended", "plugin:prettier/recommended"),
+    {
+        plugins: {
+            prettier,
+            "@typescript-eslint": typescriptEslint,
+        },
 
-    languageOptions: {
-        globals: {
-            ...globals.browser,
+        languageOptions: {
+            globals: {
+                ...globals.browser,
+            },
+        },
+
+        rules: {
+            "prettier/prettier": ["error"],
+            "no-unused-vars": "off",
+
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                {
+                    vars: "all",
+                    args: "after-used",
+                    ignoreRestSiblings: true,
+                    argsIgnorePattern: "^_",
+                },
+            ],
         },
     },
-
-    rules: {
-        "prettier/prettier": ["error"],
-        "no-unused-vars": "off",
-
-        "@typescript-eslint/no-unused-vars": ["error", {
-            vars: "all",
-            args: "after-used",
-            ignoreRestSiblings: true,
-            argsIgnorePattern: "^_",
-        }],
-    },
-}];
+];
