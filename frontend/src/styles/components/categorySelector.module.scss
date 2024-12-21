@@ -1,0 +1,31 @@
+@use "../variables.module";
+
+.selector {
+    position: relative;
+    margin: 0.5rem;
+}
+.list {
+    z-index: 10;
+    position: absolute;
+    padding: 0.5rem;
+    background-color: variables.$base_color;
+    inset-inline-start: 0rem;
+}
+.item {
+    position: relative;
+    border-style: dashed;
+    padding: 0.1rem 0.4rem;
+    cursor: pointer;
+}
+.subList {
+    position: absolute;
+    padding: 0.5rem;
+    background-color: variables.$base_color;
+    left: 100%;
+}
+.subItem {
+    position: relative;
+    border-style: dashed;
+    padding: 0.1rem 0.4rem;
+    cursor: pointer;
+}

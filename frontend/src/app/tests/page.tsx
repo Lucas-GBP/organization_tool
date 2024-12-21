@@ -9,6 +9,8 @@ export default function Page() {
             <br />
             <Link href="/tests/modal">Modal</Link>
             <br />
+            <Link href="/tests/categoryList">Category List</Link>
+            <br />
         </main>
     );
 }
