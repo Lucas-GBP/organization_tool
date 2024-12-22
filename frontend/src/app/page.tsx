@@ -6,7 +6,9 @@ export default function Home() {
     return (
         <main className={styles.main}>
             <div className={styles.center}>
-                <Link href="/settings">Categories</Link>
+                <Link href="/settings">Configurações</Link>
+                <br />
+                <Link href="/timer">Timer</Link>
             </div>
         </main>
     );

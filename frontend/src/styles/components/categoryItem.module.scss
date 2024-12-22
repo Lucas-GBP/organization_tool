@@ -1,4 +1,5 @@
 @use "../variables.module";
+@use "categorySelector.module";
 
 
 .categoryItem {
@@ -11,4 +12,7 @@
     margin: 0.25rem;
     padding: 0.25rem;
     color: #000;
+}
+.titleInput {
+    width: categorySelector.$max_category_size;
 }

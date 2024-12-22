@@ -1,0 +1,59 @@
+@use "../variables.module";
+
+$max_category_size: 10em;
+$selector_height: 1.75em;
+$item_space_v: 0.25rem;
+$border_thickness: 0.15rem;
+$invisible: #00000000;
+
+.selector {
+    position: relative;
+    margin: 0.5rem;
+}
+.button {
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    border: solid;
+    border-width: $border_thickness;
+    border-color: $invisible;
+    color: variables.$base_color;
+    background-color: variables.$subsection_color;
+    width: $max_category_size;
+    height: $selector_height;
+    line-height: $selector_height;
+    border-radius: variables.$border-radius-s;
+}
+.list {
+    z-index: 10;
+    position: absolute;
+    padding: 0.5rem;
+    inset-inline-start: 0rem;
+    background-color: variables.$base_color;
+    border-radius: variables.$border-radius-s;
+}
+.item {
+    position: relative;
+    border-style: solid;
+    padding: 0.1rem 0.4rem;
+    cursor: pointer;
+    border-width: $border_thickness;
+    margin: $item_space_v 0rem;
+    border-radius: variables.$border-radius-s;
+}
+.subList {
+    position: absolute;
+    padding: 0.5rem;
+    left: 100%;
+    background-color: variables.$base_color;
+    border-radius: variables.$border-radius-s;
+}
+.subItem {
+    position: relative;
+    border-style: solid;
+    padding: 0.1rem 0.4rem;
+    cursor: pointer;
+    margin: $item_space_v 0rem;
+    border-width: $border_thickness;
+    border-radius: variables.$border-radius-s;
+}
