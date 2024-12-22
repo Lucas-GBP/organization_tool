@@ -4,6 +4,7 @@ import type { CategoryPost, CategotyCompletedRecord } from "@/api/types/category
 import { arrayToMap } from "@/utils/arrayToMap";
 import { UUID } from "crypto";
 import { Repository } from "@/api";
+import { organizeCategories } from "@/utils/organizeCategories";
 
 const standart_post_data: CategoryPost = {
     title: "New Category",
@@ -21,6 +22,7 @@ export function CategoriesList(props: CategoriesListProps) {
 
     const getData = useCallback(async () => {
         const category_list = await repository.category.get_all_completed();
+        organizeCategories(category_list);
         setCategories(arrayToMap(category_list));
     }, [repository]);
     const newCategory = useCallback(async () => {

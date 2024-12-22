@@ -121,7 +121,7 @@ export function CategoryItem(props: CategoryItemProps) {
 
     return (
         <div className={style.categoryItem} key={"category:" + category.uuid}>
-            Title: <Input defaultValue={category.title} onBlur={updateTitle} />
+            Title: <Input className={style.titleInput} defaultValue={category.title} onBlur={updateTitle} />
             Color: <ColorPicker defaultValue={category.color} onChangeComplete={updateColor} />
             <button onClick={deleteItem}>Delete</button>
             <button onClick={newSubCategory}>New Sub Category</button>
@@ -191,7 +191,7 @@ export function SubCategoryItem(props: SubCategoryItemProps) {
 
     return (
         <div key={"sub_category:" + item.uuid}>
-            Title: <Input defaultValue={item.title} onBlur={updateTitle} />
+            Title: <Input defaultValue={item.title} className={style.titleInput} onBlur={updateTitle} />
             Color: <ColorPicker defaultValue={item.color} onChangeComplete={updateColor} />
             <button onClick={deleteSubItem}> Delete </button>
         </div>

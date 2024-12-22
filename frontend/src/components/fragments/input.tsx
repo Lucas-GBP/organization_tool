@@ -8,5 +8,5 @@ export interface InputProps extends AntInputProps {
 }*/
 export interface InputProps extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {}
 export function Input(props: InputProps) {
-    return <input {...props} className={style.inputFragment} />;
+    return <input {...props} className={`${style.inputFragment} ${props.className}`} />;
 }

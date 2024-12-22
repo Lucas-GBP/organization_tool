@@ -1,6 +1,6 @@
 import style from "@/styles/components/categorySelector.module.scss";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { CategotyCompletedRecord, CategoryRecord, SubCategoryRecord } from "@/api/types/category";
 
 export type SelectedCategoryObject = {
@@ -9,14 +9,13 @@ export type SelectedCategoryObject = {
 };
 
 export interface CategorySelectorProps {
-    categories: CategotyCompletedRecord[];
+    categories?: CategotyCompletedRecord[];
     selected?: SelectedCategoryObject;
     setItem: (arg: SelectedCategoryObject) => void;
 }
 export function CategorySelector(props: CategorySelectorProps) {
     const { setItem } = props;
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [label, setLabel] = useState<string>("");
 
     const openAction = useCallback(() => {
         setIsOpen(!isOpen);
@@ -29,23 +28,45 @@ export function CategorySelector(props: CategorySelectorProps) {
         [setItem, setIsOpen]
     );
 
-    useEffect(() => {
+    const button = useMemo(() => {
         if (props.selected?.subCategory?.title) {
-            setLabel(props.selected?.subCategory?.title);
-            return;
+            return (
+                <span 
+                    className={style.button} 
+                    onClick={openAction}
+                    style={{
+                        borderColor: props.selected.subCategory.color
+                    }}
+                >
+                    {props.selected?.subCategory?.title}
+                </span>
+            );
         }
         if (props.selected?.category.title) {
-            setLabel(props.selected?.category.title);
-            return;
+            return (
+                <span 
+                    className={style.button} 
+                    onClick={openAction}
+                    style={{
+                        borderColor: props.selected.category.color
+                    }}
+                >
+                    {props.selected?.category.title}
+                </span>
+            );
         }
-        setLabel("Select Category");
-        return;
-    }, [props.selected]);
+
+        return (
+            <span className={style.button} onClick={openAction}>
+                Select Category
+            </span>
+        );
+    }, [props.selected, openAction]);
 
     return (
         <span className={style.selector} onMouseLeave={() => setIsOpen(false)}>
-            <button onClick={openAction}>{label}</button>
-            {isOpen && (
+            {button}
+            {isOpen && props.categories && (
                 <div className={style.list}>
                     {props.categories.map((value) => {
                         return <Item key={value.uuid} item={value} setItem={setLocalItem} />;

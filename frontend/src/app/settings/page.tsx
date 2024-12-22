@@ -9,6 +9,9 @@ export default function Page() {
 
     useEffect(() => {
         context?.get_categories();
+        return () => {
+            context?.get_categories();
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

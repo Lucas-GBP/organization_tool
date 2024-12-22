@@ -4,6 +4,7 @@ import { Login } from "@/api/helpers/login";
 import type { UserRecord } from "@/api/types/login";
 import { Repository } from "@/api";
 import type { CategotyCompletedRecord } from "@/api/types/category";
+import { organizeCategories } from "@/utils/organizeCategories";
 
 export interface PageContextType {
     user_uuid: UUID;
@@ -34,11 +35,12 @@ export const PageProvider = ({ children }: PropsWithChildren) => {
         setUser(login);
     }, [setUser]);
     const get_categories = useCallback(async () => {
-        console.warn("get_categories()");
         if (!repository) {
             return;
         }
         const categories_buffer = await repository.category.get_all_completed();
+        // Organiza em ordem alfabetica as categorias e subcategorias
+        organizeCategories(categories_buffer);
         setCategories(categories_buffer);
     }, [repository, setCategories]);
 
@@ -57,7 +59,7 @@ export const PageProvider = ({ children }: PropsWithChildren) => {
 
         setValue({
             user_uuid: user.uuid,
-            repository: new Repository(user.uuid),
+            repository: repository,
             categories: categories,
             get_categories: get_categories,
         });
