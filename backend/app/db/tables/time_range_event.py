@@ -1,6 +1,6 @@
 from datetime import datetime as Pydatetime
 from uuid import UUID
-from sqlalchemy import ForeignKey, DateTime, select
+from sqlalchemy import ForeignKey, DateTime, select, Index
 from sqlalchemy.orm import mapped_column, MappedColumn as Mapped
 
 from app.db.utils import (
@@ -27,6 +27,16 @@ class TimeRangeEvent(Base):
     end_time:Mapped[Pydatetime|None] = mapped_column(DateTime, nullable=True)
 
     deleted_at:Mapped[Pydatetime|None] = mapped_column(DateTime, nullable=True)
+
+    __table_args__ = (
+        # apenas um timer por usuário por vez.
+        Index(
+            "unique_active_time_range_event_per_user",
+            user_id,
+            unique=True,
+            postgresql_where=(end_time == None)
+        ),
+    )
 
 class TimeRangeEventNotDeleted(BaseView):
     id:Mapped[int] = primary_id_column()

@@ -23,7 +23,12 @@ from .sub_category import (
     SubCategoryTable, 
 )
 from .time_range_event import (
+    TimeRangeEventPost,
+    TimeRangeEventPatch,
+
     TimeRangeEventNotDeleted,
+    TimerRangeEventCreate,
+    TimerRangeEventUpdate,
     
     TimeRangeEventTable,
     TimeRangeEventNotDeletedView,
