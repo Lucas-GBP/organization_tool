@@ -1,4 +1,4 @@
 from .password import (
-    hash_password,
-    verify_password
+    hash_password as hash_password,
+    verify_password as verify_password
 )

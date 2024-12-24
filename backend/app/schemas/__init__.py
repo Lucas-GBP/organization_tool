@@ -1,46 +1,46 @@
 from .category import (
-    CategoryPost,
-    CategoryWithSubCategoryPost,
-    CategoryPatch, 
+    CategoryPost as CategoryPost,
+    CategoryWithSubCategoryPost as CategoryWithSubCategoryPost,
+    CategoryPatch as CategoryPatch, 
 
-    Category,
-    CategoryWithSubCategory,
-    CategoryCreate,
-    CategoryUpdate,
+    Category as Category,
+    CategoryWithSubCategory as CategoryWithSubCategory,
+    CategoryCreate as CategoryCreate,
+    CategoryUpdate as CategoryUpdate,
     
-    CategoryTable,
-    CategoryWithSubCategoryComposed
+    CategoryTable as CategoryTable,
+    CategoryWithSubCategoryComposed as CategoryWithSubCategoryComposed
 )
 from .sub_category import (
-    SubCategoryIntegratedPost,
-    SubCategoryPost, 
-    SubCategoryPatch,
+    SubCategoryIntegratedPost as SubCategoryIntegratedPost,
+    SubCategoryPost as SubCategoryPost, 
+    SubCategoryPatch as SubCategoryPatch,
 
-    SubCategory,
-    SubCategoryCreate,
-    SubCategoryUpdate,
+    SubCategory as SubCategory,
+    SubCategoryCreate as SubCategoryCreate,
+    SubCategoryUpdate as SubCategoryUpdate,
 
-    SubCategoryTable, 
+    SubCategoryTable as SubCategoryTable, 
 )
 from .time_range_event import (
-    TimeRangeEventPost,
-    TimeRangeEventPatch,
+    TimeRangeEventPost as TimeRangeEventPost,
+    TimeRangeEventPatch as TimeRangeEventPatch,
 
-    TimeRangeEventNotDeleted,
-    TimerRangeEventCreate,
-    TimerRangeEventUpdate,
+    TimeRangeEventNotDeleted as TimeRangeEventNotDeleted,
+    TimeRangeEventCreate as TimeRangeEventCreate,
+    TimeRangeEventUpdate as TimeRangeEventUpdate,
     
-    TimeRangeEventTable,
-    TimeRangeEventNotDeletedView,
+    TimeRangeEventTable as TimeRangeEventTable,
+    TimeRangeEventNotDeletedView as TimeRangeEventNotDeletedView,
 )
 from .user import (
-    UserGet,
-    UserPost,
-    UserPatch,
+    UserGet as UserGet,
+    UserPost as UserPost,
+    UserPatch as UserPatch,
 
-    User,
-    UserCreate,
-    UserUpdate,
+    User as User,
+    UserCreate as UserCreate,
+    UserUpdate as UserUpdate,
 
-    UserTable,
+    UserTable as UserTable
 )

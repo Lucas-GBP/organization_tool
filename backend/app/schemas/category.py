@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from ._base import BaseRecord, BaseModel
+from .utils.base import BaseRecord, BaseModel
 from .sub_category import SubCategoryIntegratedPost, SubCategory, SubCategoryTable
 from .utils import ColorField
 

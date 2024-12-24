@@ -1,4 +1,4 @@
-from ._base import BaseRecord, BaseModel
+from .utils.base import BaseRecord, BaseModel
 from uuid import UUID
 from .utils import ColorField
 

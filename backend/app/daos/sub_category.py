@@ -106,7 +106,7 @@ class SubCategory(BaseDao[SubCategoryModel, SubCategoryTable]):
 
             result = (await db.execute(statement)).one()
             if result is None or len(result) <= 0:
-                raise FailureToPatch
+                raise FailureToPatch(self.model)
 
             return self.schemaRecord.model_validate(result[0])
         except Exception as e:

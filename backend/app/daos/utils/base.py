@@ -3,8 +3,8 @@ from uuid import UUID
 from sqlalchemy.sql import select, insert, delete, update
 
 from app.db.utils.base import Base as BaseModel, BaseView as BaseMovelView
-from app.schemas._base import BaseRecord
-from app.api.session import AsyncSession
+from app.schemas.utils.base import BaseRecord as BaseRecord
+from app.api.session import AsyncSession as AsyncSession
 
 from .exeptions import (
     ItemNotFound, MissingUUID

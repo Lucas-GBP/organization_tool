@@ -1,10 +1,10 @@
 from app.daos.utils.base import (
-    BaseDao
+    BaseDao as BaseDao
 )
 
 from app.daos.utils.exeptions import (
-    ItemNotFound,
-    FailuredToPost,
-    FailureToPatch,
-    MissingUUID
+    ItemNotFound as ItemNotFound,
+    FailuredToPost as FailuredToPost,
+    FailureToPatch as FailureToPatch,
+    MissingUUID as MissingUUID
 )

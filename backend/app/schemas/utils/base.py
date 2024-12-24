@@ -1,5 +1,5 @@
 from typing import TypeVar
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel as BaseModel, ConfigDict
 
 
 Model = TypeVar('Model', bound='BaseModel')

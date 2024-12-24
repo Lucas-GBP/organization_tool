@@ -2,7 +2,7 @@ from uuid import UUID
 from datetime import datetime
 from typing import Optional
 
-from ._base import BaseRecord, BaseModel
+from .utils.base import BaseRecord, BaseModel
 
 
 """
@@ -40,7 +40,7 @@ class TimeRangeEventNotDeleted(BaseModel):
     description:str|None
     start_time:datetime
     end_time:datetime|None
-class TimerRangeEventCreate(BaseModel):
+class TimeRangeEventCreate(BaseModel):
     user_id: int
     start_time:datetime
     # Optional arguments
@@ -49,7 +49,7 @@ class TimerRangeEventCreate(BaseModel):
     title:Optional[str]
     description:Optional[str]
     end_time:Optional[datetime]
-class TimerRangeEventUpdate(BaseModel):
+class TimeRangeEventUpdate(BaseModel):
     start_time:datetime
     # Optional arguments
     category_id:int|None

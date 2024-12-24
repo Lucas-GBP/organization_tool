@@ -1,1 +1,2 @@
-from .fields import ColorField
+from .base import BaseRecord as BaseRecord
+from .fields import ColorField as ColorField

@@ -1,7 +1,10 @@
 from typing import AsyncGenerator
-from sqlalchemy.engine import URL, create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.engine import URL
+from sqlalchemy.ext.asyncio import (
+    AsyncSession as AsyncSession, 
+    create_async_engine, 
+    async_sessionmaker
+)
 
 DATABASE_ASYNC = "postgresql+asyncpg://postgres:changethis@database:5432/app"
 DATABASE_URL = "postgresql://postgres:changethis@database:5432/app"

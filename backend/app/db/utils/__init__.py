@@ -1,18 +1,18 @@
 from .base import (
-    Base,
-    BaseView,
-    ts_vector_dict,
+    Base as Base,
+    BaseView as BaseView,
+    ts_vector_dict as ts_vector_dict,
 )
 from .columns import (
-    primary_id_column,
-    uuid_column, 
-    hex_color_column,
+    primary_id_column as primary_id_column,
+    uuid_column as uuid_column, 
+    hex_color_column as hex_color_column,
 )
 from .constrains import (
-    CheckColorHex
+    CheckColorHex as CheckColorHex
 )
 from .entities import (
-    view_entity,
-    function_entity,
-    trigger_entity
+    view_entity as view_entity,
+    function_entity as function_entity,
+    trigger_entity as trigger_entity
 )
