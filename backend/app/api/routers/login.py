@@ -49,14 +49,12 @@ async def get_login_test(
                 
                 response.status_code = status.HTTP_201_CREATED
                 return new_user.to_base_model()
-            except Exception as e:
-                print(e)
+            except Exception:
                 raise HTTPException(
                     status_code=status.HTTP_503_SERVICE_UNAVAILABLE, 
                     detail="Serviço indisponível. Tente novamente mais tarde."
                 )
-        except Exception as e:
-            print(e)
+        except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

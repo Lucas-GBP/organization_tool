@@ -26,6 +26,10 @@ class TimeRangeEventPatch(BaseModel):
     title:Optional[str]
     description:Optional[str]
     end_time:Optional[datetime]
+class TimeRangeEventGetByRange(BaseModel):
+    user_uuid:UUID
+    start: datetime
+    end: Optional[datetime]
 
 """
     Database Operations
@@ -41,7 +45,7 @@ class TimeRangeEventNotDeleted(BaseModel):
     start_time:datetime
     end_time:datetime|None
 class TimeRangeEventCreate(BaseModel):
-    user_id: int
+    user_uuid: UUID
     start_time:datetime
     # Optional arguments
     category_id:Optional[int]
@@ -50,6 +54,7 @@ class TimeRangeEventCreate(BaseModel):
     description:Optional[str]
     end_time:Optional[datetime]
 class TimeRangeEventUpdate(BaseModel):
+    uuid: UUID
     start_time:datetime
     # Optional arguments
     category_id:int|None

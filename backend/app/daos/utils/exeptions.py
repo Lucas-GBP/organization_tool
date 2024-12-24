@@ -6,6 +6,13 @@ ModelType = TypeVar("ModelType", bound=BaseModel|BaseMovelView)
 """
     Generic DAO's Exeptions
 """
+class GenerticDaoError(Exception):
+    def __init__(self, table:Type[ModelType]|None) -> None:
+        if not table:
+            super().__init__("Some error :p")
+        else:
+            super().__init__(f"Some error doing stuff in {table.__tablename__}")
+        return
 class ItemNotFound(Exception):
     def __init__(self) -> None:
         super().__init__("Item not found in the database")

@@ -25,6 +25,7 @@ from .sub_category import (
 from .time_range_event import (
     TimeRangeEventPost as TimeRangeEventPost,
     TimeRangeEventPatch as TimeRangeEventPatch,
+    TimeRangeEventGetByRange as TimeRangeEventGetByRange,
 
     TimeRangeEventNotDeleted as TimeRangeEventNotDeleted,
     TimeRangeEventCreate as TimeRangeEventCreate,

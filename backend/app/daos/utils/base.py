@@ -5,6 +5,7 @@ from sqlalchemy.sql import select, insert, delete, update
 from app.db.utils.base import Base as BaseModel, BaseView as BaseMovelView
 from app.schemas.utils.base import BaseRecord as BaseRecord
 from app.api.session import AsyncSession as AsyncSession
+from app.daos.utils import exeptions
 
 from .exeptions import (
     ItemNotFound, MissingUUID
@@ -27,16 +28,21 @@ class BaseDao(Generic[ModelType, SchemaType]):
         self.model = model
         self.schemaRecord = schemaRecord
 
-    async def delete(self, db:AsyncSession, uuid:UUID) -> None:
+    async def delete(self, db:AsyncSession, uuid:UUID) -> SchemaType:
         try:
             if not hasattr(self.model, 'uuid'):
                 raise MissingUUID(self.model)
 
             statement = delete(self.model).where(
                 self.model.uuid == uuid # type: ignore[attr-defined, unused-ignore]
-            )
-            await db.execute(statement)
+            ).returning(self.model)
+            result = await db.execute(statement)
             await db.commit()
+            deleted_instance = result.fetchone()
+
+            if not deleted_instance:
+                raise exeptions.ItemNotFound()
+            return self.schemaRecord.model_validate(deleted_instance[0]) # type: ignore[no-any-return]
         except Exception as e:
             print(f"Failed to delete {self.model.__tablename__}: {e}")
             raise e

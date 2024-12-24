@@ -83,7 +83,7 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
     async def post(
         self,
         db: AsyncSession,
-        data: schemas.TimeRangeEventPost
+        data: schemas.TimeRangeEventCreate
     ) -> schemas.TimeRangeEventTable:
         try:
             statement = insert(models.TimeRangeEvent).values(
@@ -110,7 +110,7 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
     async def patch(
         self,
         db: AsyncSession,
-        data: schemas.TimeRangeEventPatch
+        data: schemas.TimeRangeEventUpdate
     ) -> schemas.TimeRangeEventTable:
         try:
             statement = update(
