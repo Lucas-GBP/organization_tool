@@ -51,11 +51,11 @@ async def patch_content(
 async def delete_content(
     uuid:UUID,
     Session: AsyncSession = Depends(get_session),
-) -> None:
+) -> Category:
     async with Session as db, db.begin():
-        await daos.category.delete(db, uuid)
+        deleted = await daos.category.delete(db, uuid)
 
-        return
+        return deleted.to_base_model()
 
 @router.get("/all/{user_uuid}")
 async def get_all_content(

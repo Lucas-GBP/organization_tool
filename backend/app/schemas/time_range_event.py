@@ -97,7 +97,6 @@ class TimeRangeEventNotDeletedView(BaseRecord):
     id:int
     uuid:UUID
 
-    user_id:int
     category_id:int|None
     sub_category_id:int|None
     title:str|None
@@ -108,7 +107,6 @@ class TimeRangeEventNotDeletedView(BaseRecord):
     def to_base_model(self) -> TimeRangeEventNotDeleted:
         return TimeRangeEventNotDeleted(
             uuid=self.uuid,
-            user_id=self.user_id,
             category_id=self.category_id,
             sub_category_id=self.sub_category_id,
             title=self.title,
