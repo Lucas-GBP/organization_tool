@@ -31,11 +31,11 @@ export function CategorySelector(props: CategorySelectorProps) {
     const button = useMemo(() => {
         if (props.selected?.subCategory?.title) {
             return (
-                <span 
-                    className={style.button} 
+                <span
+                    className={style.button}
                     onClick={openAction}
                     style={{
-                        borderColor: props.selected.subCategory.color
+                        borderColor: props.selected.subCategory.color,
                     }}
                 >
                     {props.selected?.subCategory?.title}
@@ -44,11 +44,11 @@ export function CategorySelector(props: CategorySelectorProps) {
         }
         if (props.selected?.category.title) {
             return (
-                <span 
-                    className={style.button} 
+                <span
+                    className={style.button}
                     onClick={openAction}
                     style={{
-                        borderColor: props.selected.category.color
+                        borderColor: props.selected.category.color,
                     }}
                 >
                     {props.selected?.category.title}

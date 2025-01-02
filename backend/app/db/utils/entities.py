@@ -34,7 +34,7 @@ def view_entity(
     if isinstance(statement, str):
         definition = statement
     else:
-        definition = str(statement).replace(table_name+".", "").replace(", "+table_name, "")
+        definition = str(statement).replace(table_name+".", "").replace(", "+table_name, "").replace(table_name+", ", "")
 
     return PGView(
         schema=schema,

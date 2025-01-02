@@ -1,8 +1,8 @@
-"""view and functions test
+"""timer_range view
 
-Revision ID: deda4dea69be
-Revises: a9368478f5c4
-Create Date: 2024-08-31 20:55:10.271209
+Revision ID: c88e4ff63673
+Revises: 0d7efec71d4f
+Create Date: 2024-12-31 21:10:53.313517
 
 """
 from typing import Sequence, Union
@@ -10,10 +10,11 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from alembic_utils.pg_view import PGView
+from sqlalchemy import text as sql_text
 
 # revision identifiers, used by Alembic.
-revision: str = '46a916801fd8'
-down_revision: Union[str, None] = 'a9368478f5c4'
+revision: str = 'c88e4ff63673'
+down_revision: Union[str, None] = '0d7efec71d4f'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

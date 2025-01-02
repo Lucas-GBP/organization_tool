@@ -1,5 +1,6 @@
 from uuid import UUID
-from typing import Any
+from datetime import datetime
+from typing import Optional
 from fastapi import APIRouter, Depends, Body, status, HTTPException, Response
 from app import daos, schemas
 from app.daos.utils import exeptions
@@ -41,7 +42,7 @@ async def get(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-@router.get("/range/",
+@router.get("/range",
     responses={
         status.HTTP_200_OK: {
             "model": list[schemas.TimeRangeEventNotDeleted]
@@ -51,16 +52,20 @@ async def get(
     }
 )
 async def get_by_range(
-    body:schemas.TimeRangeEventGetByRange = Body(...),
+    user_uuid:UUID,
+    start: datetime,
+    end: Optional[datetime] = None,
     Session: AsyncSession = Depends(get_session)
 ) -> list[schemas.TimeRangeEventNotDeleted]:
+    # print(f"\n\n\nuser_uuid:\t{user_uuid}\nstart:\t{start}\nend:\t\t{end}\n\n\n")
+
     async with Session as db, db.begin():
         try:
             range_list:list[schemas.TimeRangeEventNotDeleted] = []
             generator = daos.time_range_event.get_by_time_range(db,
-                user_uuid=body.user_uuid,
-                start=body.start,
-                end=body.end
+                user_uuid=user_uuid,
+                start=start,
+                end=end
             )
 
             async for item in generator:
@@ -84,15 +89,12 @@ async def get_by_range(
 async def get_running(
     user_uuid: UUID,
     Session: AsyncSession = Depends(get_session)
-) -> schemas.TimeRangeEventNotDeleted:
+) -> schemas.TimeRangeEventNotDeleted|None:
     async with Session as db, db.begin():
         running_timer = await daos.time_range_event.get_running_timer(db, user_uuid=user_uuid)
         
         if running_timer is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="No timers are running now"
-            )
+            return None
         return running_timer.to_base_model()
 
 @router.post("/",
@@ -110,6 +112,7 @@ async def post(
     body:schemas.TimeRangeEventPost = Body(...),
     Session: AsyncSession = Depends(get_session)
 ) -> schemas.TimeRangeEventNotDeleted:
+    print(f"\n\n\nbody post: \n{body}")
     async with Session as db, db.begin():
         try:
             posted = await daos.time_range_event.post(db,
@@ -126,7 +129,8 @@ async def post(
 
             response.status_code = status.HTTP_201_CREATED
             return posted.to_base_model()
-        except Exception:
+        except Exception as e:
+            print(e)
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

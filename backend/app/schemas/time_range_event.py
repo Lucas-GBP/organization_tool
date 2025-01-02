@@ -12,11 +12,11 @@ class TimeRangeEventPost(BaseModel):
     user_uuid:UUID
     start_time:datetime
     # Optional arguments
-    category_id:Optional[int]
-    sub_category_id:Optional[int]
-    title:Optional[str]
-    description:Optional[str]
-    end_time:Optional[datetime]
+    category_id:Optional[int] = None
+    sub_category_id:Optional[int] = None
+    title:Optional[str] = None
+    description:Optional[str] = None
+    end_time:Optional[datetime] = None
 class TimeRangeEventPatch(BaseModel):
     uuid:UUID
     start_time:datetime
@@ -37,7 +37,6 @@ class TimeRangeEventGetByRange(BaseModel):
 class TimeRangeEventNotDeleted(BaseModel):
     uuid:UUID
 
-    user_id:int
     category_id:int|None
     sub_category_id:int|None
     title:str|None
@@ -83,7 +82,6 @@ class TimeRangeEventTable(BaseRecord):
     def to_base_model(self) -> TimeRangeEventNotDeleted:
         return TimeRangeEventNotDeleted(
             uuid=self.uuid,
-            user_id=self.user_id,
             category_id=self.category_id,
             sub_category_id=self.sub_category_id,
             title=self.title,
@@ -91,8 +89,6 @@ class TimeRangeEventTable(BaseRecord):
             start_time=self.start_time,
             end_time=self.end_time
         )
-
-
 class TimeRangeEventNotDeletedView(BaseRecord):
     id:int
     uuid:UUID

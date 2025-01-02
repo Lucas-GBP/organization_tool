@@ -23,10 +23,10 @@ class TimeRangeEvent(Base):
     )
     title:Mapped[str|None]
     description:Mapped[str|None]
-    start_time:Mapped[Pydatetime] = mapped_column(DateTime)
-    end_time:Mapped[Pydatetime|None] = mapped_column(DateTime, nullable=True)
+    start_time:Mapped[Pydatetime] = mapped_column(DateTime(timezone=True))
+    end_time:Mapped[Pydatetime|None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    deleted_at:Mapped[Pydatetime|None] = mapped_column(DateTime, nullable=True)
+    deleted_at:Mapped[Pydatetime|None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     __table_args__ = (
         # apenas um timer por usuário por vez.
@@ -47,10 +47,10 @@ class TimeRangeEventNotDeleted(BaseView):
     sub_category_id:Mapped[int|None]
     title:Mapped[str|None]
     description:Mapped[str|None]
-    start_time:Mapped[Pydatetime]
-    end_time:Mapped[Pydatetime|None]
+    start_time:Mapped[Pydatetime] = mapped_column(DateTime(timezone=True))
+    end_time:Mapped[Pydatetime|None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 time_range_event_not_deleted = view_entity(
     TimeRangeEventNotDeleted,
-    select(TimeRangeEventNotDeleted).where(TimeRangeEvent.deleted_at.is_not(None))
+    select(TimeRangeEventNotDeleted).where(TimeRangeEvent.deleted_at.is_(None))
 )

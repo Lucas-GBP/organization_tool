@@ -51,7 +51,7 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
                     models.TimeRangeEventNotDeleted.user_id == select(models.User.id).where(
                         models.User.uuid == user_uuid,
                     ).scalar_subquery(),
-                    models.TimeRangeEventNotDeleted.start_time >= start,
+                    models.TimeRangeEventNotDeleted.start_time >= start
                 ).limit(limit)
             result = (await db.execute(statement)).all()
 
@@ -103,7 +103,7 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
             return self.schemaRecord.model_validate(result[0])
         except Exception as e:
             running_timer = await self.get_running_timer(db=db, user_uuid=data.user_uuid)
-            if running_timer is None:
+            if running_timer:
                 raise exeptions.TimerAlreadyRunning()
             print(f'Failed to create {self.model.__tablename__}: {e}')
             raise e
