@@ -106,11 +106,11 @@ async def patch_sub_category(
 async def delete_sub_category(
     uuid: UUID,
     Session: AsyncSession = Depends(get_session)
-) -> None:
+) -> SubCategory:
     async with Session as db, db.begin():
-        await daos.sub_category.delete(db, uuid)
+        deleted = await daos.sub_category.delete(db, uuid)
 
-    return
+    return deleted.to_base_model()
     
 @router.get("/subcategory/all/{uuid}")
 async def get_all_sub(

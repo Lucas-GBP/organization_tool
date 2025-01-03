@@ -95,7 +95,7 @@ export class Category extends Base {
         return response.json();
     }
 
-    public async delete_sub(subcategory_uuid: UUID) {
+    public async delete_sub(subcategory_uuid: UUID): Promise<SubCategoryRecord> {
         const response = await this.fetch(`subcategory/${subcategory_uuid}`, {
             method: "DELETE",
         });

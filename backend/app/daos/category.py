@@ -7,7 +7,7 @@ from app.daos.utils.exeptions import (
     FailureToPatch,
     ItemNotFound
 )
-from app.db.models import Category as CategoryModel, User as UserModel
+from app.db import models 
 from app.schemas import (
     CategoryTable,
     CategoryWithSubCategoryComposed,
@@ -18,7 +18,7 @@ import app.daos as daos
 from sqlalchemy.sql import select, insert, update
 from app.api.session import AsyncSession
 
-class Category(BaseDao[CategoryModel, CategoryTable]): 
+class Category(BaseDao[models.Category, CategoryTable]): 
     async def get_all(
         self,
         db: AsyncSession,
@@ -26,8 +26,8 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
     ) -> AsyncGenerator[CategoryTable, None]:
         try:
             statement = select(self.model).where(
-                self.model.user_id == select(UserModel.id).where(
-                    UserModel.uuid == user_uuid
+                self.model.user_id == select(models.User.id).where(
+                    models.User.uuid == user_uuid
                 ).scalar_subquery()
             )
             result = (await db.execute(statement)).all()
@@ -88,8 +88,8 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
                 color = data.color,
                 title = data.title,
                 description = data.description,
-                user_id = select(UserModel.id).where(
-                    UserModel.uuid == data.user_uuid
+                user_id = select(models.User.id).where(
+                    models.User.uuid == data.user_uuid
                 ).scalar_subquery()
             ).returning(self.model)
 
@@ -125,8 +125,7 @@ class Category(BaseDao[CategoryModel, CategoryTable]):
             print(f'Failed to patch {self.model.__tablename__}: {e}')
             raise e
 
-    
 category = Category(
-    model=CategoryModel,
+    model=models.Category,
     schemaRecord=CategoryTable
 )

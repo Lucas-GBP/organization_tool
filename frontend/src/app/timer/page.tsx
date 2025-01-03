@@ -58,12 +58,15 @@ function Main(props: MainProps) {
                 <button onClick={get_list}>Get List</button>
             </section>
             <section>
-                {list && list.map((item) => <TimerEvent 
-                    key={item.uuid} 
-                    repository={repository} 
-                    timerEvent={item}
-                    categories={props.context.categories?props.context.categories:[]} 
-                />)}
+                {list &&
+                    list.map((item) => (
+                        <TimerEvent
+                            key={item.uuid}
+                            repository={repository}
+                            timerEvent={item}
+                            categories={props.context.categories ? props.context.categories : []}
+                        />
+                    ))}
             </section>
         </main>
     );
@@ -148,28 +151,27 @@ function RunningTimer(props: RunningTimerProps) {
 
 type TimerEventProps = {
     repository: Repository;
-    categories: CategotyCompletedRecord[]
+    categories: CategotyCompletedRecord[];
     timerEvent: TimeRangeEventNotDeleted;
 };
 function TimerEvent(props: TimerEventProps) {
-    const {repository} = props;
+    const { repository } = props;
     const [timerEvent, setTimerEvent] = useState(props.timerEvent);
-    const [selectedCategory, setSelectedCategory] = useState<SelectedCategoryObject|undefined>(undefined);
+    const [selectedCategory, setSelectedCategory] = useState<SelectedCategoryObject | undefined>(undefined);
 
     useEffect(() => {
         setTimerEvent(props.timerEvent);
-    }, [props.timerEvent])
+    }, [props.timerEvent]);
     useEffect(() => {
         console.log(selectedCategory);
-    }, [selectedCategory])
-
+    }, [selectedCategory]);
 
     return (
         <div className={style.timerEvent}>
-            <CategorySelector 
+            <CategorySelector
                 categories={props.categories}
                 setItem={(item) => {
-                    setSelectedCategory(item)
+                    setSelectedCategory(item);
                 }}
                 selected={selectedCategory}
             />

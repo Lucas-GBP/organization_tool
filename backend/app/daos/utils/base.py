@@ -30,19 +30,25 @@ class BaseDao(Generic[ModelType, SchemaType]):
 
     async def delete(self, db:AsyncSession, uuid:UUID) -> SchemaType:
         try:
-            if not hasattr(self.model, 'uuid'):
-                raise MissingUUID(self.model)
+            query = (
+                select(self.model)
+                .where(self.model.uuid == uuid)
+                .limit(1)
+            )
+            result = await db.execute(query)
+            instance = result.scalars().first()
 
-            statement = delete(self.model).where(
-                self.model.uuid == uuid # type: ignore[attr-defined, unused-ignore]
-            ).returning(self.model)
-            result = await db.execute(statement)
-            await db.commit()
-            deleted_instance = result.fetchone()
-
-            if not deleted_instance:
+            if instance is None:
                 raise exeptions.ItemNotFound()
-            return self.schemaRecord.model_validate(deleted_instance[0]) # type: ignore[no-any-return]
+
+            # Carregar os dados antes de remover
+            instance_data = instance.__dict__.copy()
+
+            await db.delete(instance)
+            await db.commit()
+
+            # Validar os dados carregados antes da exclusão
+            return self.schemaRecord.model_validate(instance_data)  # type: ignore[no-any-return]
         except Exception as e:
             print(f"Failed to delete {self.model.__tablename__}: {e}")
             raise e
