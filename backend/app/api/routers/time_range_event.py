@@ -27,11 +27,12 @@ async def get(
 ) -> schemas.TimeRangeEventNotDeleted:
     async with Session as db, db.begin():
         try: 
-            result = await daos.time_range_event.get(db,
+            print(f"\n\n\nuuid:\t{uuid}")
+            result = await daos.time_range_event.get_not_deleted(db,
                 uuid=uuid
             )
             
-            return result.to_base_model()
+            return result
         except exeptions.ItemNotFound:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -57,8 +58,6 @@ async def get_by_range(
     end: Optional[datetime] = None,
     Session: AsyncSession = Depends(get_session)
 ) -> list[schemas.TimeRangeEventNotDeleted]:
-    # print(f"\n\n\nuser_uuid:\t{user_uuid}\nstart:\t{start}\nend:\t\t{end}\n\n\n")
-
     async with Session as db, db.begin():
         try:
             range_list:list[schemas.TimeRangeEventNotDeleted] = []
@@ -69,7 +68,7 @@ async def get_by_range(
             )
 
             async for item in generator:
-                range_list.append(item.to_base_model())
+                range_list.append(item)
             return range_list
         except Exception:
             raise HTTPException(
@@ -93,9 +92,7 @@ async def get_running(
     async with Session as db, db.begin():
         running_timer = await daos.time_range_event.get_running_timer(db, user_uuid=user_uuid)
         
-        if running_timer is None:
-            return None
-        return running_timer.to_base_model()
+        return running_timer
 
 @router.post("/",
     responses={
@@ -117,18 +114,18 @@ async def post(
         try:
             posted = await daos.time_range_event.post(db,
                 data=schemas.TimeRangeEventCreate(
-                    category_id=body.category_id,
                     description=body.description,
                     end_time=body.end_time,
                     start_time=body.start_time,
-                    sub_category_id=body.sub_category_id,
+                    category_uuid=body.category_uuid,
+                    sub_category_uuid=body.sub_category_uuid,
                     title=body.title,
                     user_uuid=body.user_uuid
                 ),
             )
 
             response.status_code = status.HTTP_201_CREATED
-            return posted.to_base_model()
+            return await daos.time_range_event.get_not_deleted(db, posted.uuid)
         except Exception as e:
             print(e)
             raise HTTPException(
@@ -156,16 +153,16 @@ async def patch(
             patched = await daos.time_range_event.patch(db=db,
                 data=schemas.TimeRangeEventUpdate(
                     uuid=body.uuid,
-                    category_id=body.category_id,
+                    category_uuid=body.category_uuid,
+                    sub_category_uuid=body.sub_category_uuid,
                     description=body.description,
                     end_time=body.end_time,
                     start_time=body.start_time,
-                    sub_category_id=body.sub_category_id,
                     title=body.title
                 )
             )
 
-            return patched.to_base_model()
+            return await daos.time_range_event.get_not_deleted(db, patched.uuid)
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -181,11 +178,11 @@ async def patch(
 async def delete(
     uuid: UUID,
     Session: AsyncSession = Depends(get_session)
-) -> schemas.TimeRangeEventNotDeleted:
+) -> UUID:
     async with Session as db, db.begin():
         try:
-            deleted = await daos.time_range_event.delete(db, uuid)
-            return deleted.to_base_model()
+            deleted = await daos.time_range_event.delete_timer(db, uuid)
+            return deleted
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR

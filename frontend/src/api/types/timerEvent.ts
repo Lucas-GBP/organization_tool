@@ -12,8 +12,8 @@ export type TimeRangeEventPostAPI = {
     user_uuid: UUID;
     start_time: ApiDateTime;
     // Optional arguments
-    category_id?: number;
-    sub_category_id?: number;
+    category_uuid?: UUID;
+    sub_category_uuid?: UUID;
     title?: string;
     description?: string;
     end_time?: ApiDateTime;
@@ -22,8 +22,8 @@ export type TimeRangeEventPatchAPI = {
     uuid: UUID;
     start_time: ApiDateTime;
     // Optional arguments
-    category_id?: number;
-    sub_category_id?: number;
+    category_uuid?: UUID;
+    sub_category_uuid?: UUID;
     title?: string;
     description?: string;
     end_time?: ApiDateTime;
@@ -39,8 +39,8 @@ export type TimeRangeEventGetByRangeAPI = {
 export type TimeRangeEventNotDeletedAPI = {
     uuid: UUID;
 
-    category_id?: number;
-    sub_category_id?: number;
+    category_uuid?: UUID;
+    sub_category_uuid?: UUID;
     title?: string;
     description?: string;
     start_time: ApiDateTime;
@@ -57,8 +57,8 @@ export type TimeRangeEventNotDeletedAPI = {
 export type TimeRangeEventPost = {
     start_time: Date;
     // Optional arguments
-    category_id?: number;
-    sub_category_id?: number;
+    category_uuid?: UUID;
+    sub_category_uuid?: UUID;
     title?: string;
     description?: string;
     end_time?: Date;
@@ -67,8 +67,8 @@ export type TimeRangeEventPatch = {
     uuid: UUID;
     start_time: Date;
     // Optional arguments
-    category_id?: number;
-    sub_category_id?: number;
+    category_uuid?: UUID;
+    sub_category_uuid?: UUID;
     title?: string;
     description?: string;
     end_time?: Date;
@@ -79,8 +79,8 @@ export type TimeRangeEventPatch = {
 export type TimeRangeEventNotDeleted = {
     uuid: UUID;
 
-    category_id?: number;
-    sub_category_id?: number;
+    category_uuid?: UUID;
+    sub_category_uuid?: UUID;
     title?: string;
     description?: string;
     start_time: Date;

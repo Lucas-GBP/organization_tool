@@ -26,7 +26,8 @@ from .time_range_event import (
     TimeRangeEventPost as TimeRangeEventPost,
     TimeRangeEventPatch as TimeRangeEventPatch,
     TimeRangeEventGetByRange as TimeRangeEventGetByRange,
-
+    
+    TimeRangeEvent as TimeRangeEvent,
     TimeRangeEventNotDeleted as TimeRangeEventNotDeleted,
     TimeRangeEventCreate as TimeRangeEventCreate,
     TimeRangeEventUpdate as TimeRangeEventUpdate,

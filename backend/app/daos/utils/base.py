@@ -1,4 +1,4 @@
-from typing import Generic, Type, TypeVar, Any
+from typing import Generic, Type, TypeVar, overload
 from uuid import UUID
 from sqlalchemy.sql import select, insert, delete, update
 

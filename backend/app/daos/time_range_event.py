@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
-from typing import AsyncGenerator
-from sqlalchemy.sql import select, insert, update
+from typing import AsyncGenerator, overload
+from sqlalchemy.sql import select, insert, update, delete
 
 from .utils.base import BaseDao
 from app.db import models
@@ -12,20 +12,32 @@ from app.daos.utils import exeptions
 class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTable]):
     async def get_not_deleted(
         self,
-        db: AsyncSession,
-        uuid: UUID,
-        user_uuid: UUID
-    ) -> schemas.TimeRangeEventNotDeletedView:
+        db: AsyncSession, 
+        uuid: UUID
+    ) -> schemas.TimeRangeEventNotDeleted:
         try:
-            statement = select(models.TimeRangeEventNotDeleted).where(
-                self.model.uuid == uuid,
-                self.model.user_id == select(models.User.id).where(
-                    models.User.uuid == user_uuid
-                ).scalar_subquery()
+            statement = select(
+                models.TimeRangeEventNotDeleted.uuid,
+                models.TimeRangeEventNotDeleted.title,
+                models.TimeRangeEventNotDeleted.description,
+                models.TimeRangeEventNotDeleted.start_time,
+                models.TimeRangeEventNotDeleted.end_time,
+                models.Category.uuid.label("category_uuid"),
+                models.SubCategory.uuid.label("sub_category_uuid")
+            ).join(
+                models.Category,  # Tabela com a qual será feito o join
+                models.Category.id == models.TimeRangeEventNotDeleted.category_id,
+                isouter=True  # LEFT JOIN
+            ).join(
+                models.SubCategory,  # Outra tabela para join
+                models.SubCategory.id == models.TimeRangeEventNotDeleted.sub_category_id,
+                isouter=True  # LEFT JOIN
+            ).where(
+                models.TimeRangeEventNotDeleted.uuid == uuid
             )
-            result = (await db.execute(statement)).all()
+            result = (await db.execute(statement)).one()
 
-            return schemas.TimeRangeEventNotDeletedView.model_validate(result[0])
+            return schemas.TimeRangeEventNotDeleted.model_validate(result._mapping)
         except Exception as e:
             print(f'Failed to get all {self.model.__tablename__}: {e}')
             raise e
@@ -36,27 +48,44 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
         end: datetime|None,
         user_uuid: UUID,
         limit: int = 50
-    ) -> AsyncGenerator[schemas.TimeRangeEventNotDeletedView, None]:
+    ) -> AsyncGenerator[schemas.TimeRangeEventNotDeleted, None]:
         try:
-            if end is not None:
-                statement = select(models.TimeRangeEventNotDeleted).where(
+            statement = select(
+                models.TimeRangeEventNotDeleted.uuid,
+                models.TimeRangeEventNotDeleted.title,
+                models.TimeRangeEventNotDeleted.description,
+                models.TimeRangeEventNotDeleted.start_time,
+                models.TimeRangeEventNotDeleted.end_time,
+                models.Category.uuid.label("category_uuid"),
+                models.SubCategory.uuid.label("sub_category_uuid")
+            ).join(
+                models.Category,  # Tabela com a qual será feito o join
+                models.Category.id == models.TimeRangeEventNotDeleted.category_id,
+                isouter=True  # LEFT JOIN
+            ).join(
+                models.SubCategory,  # Outra tabela para join
+                models.SubCategory.id == models.TimeRangeEventNotDeleted.sub_category_id,
+                isouter=True  # LEFT JOIN
+            ).limit(limit)
+            if end:
+                statement = statement.where(
                     models.TimeRangeEventNotDeleted.user_id == select(models.User.id).where(
-                        models.User.uuid == user_uuid,
+                        models.User.uuid == user_uuid
                     ).scalar_subquery(),
                     models.TimeRangeEventNotDeleted.start_time >= start,
                     models.TimeRangeEventNotDeleted.end_time <= end
-                ).limit(limit)
+                )
             else:
-                statement = select(models.TimeRangeEventNotDeleted).where(
+                statement = statement.where(
                     models.TimeRangeEventNotDeleted.user_id == select(models.User.id).where(
-                        models.User.uuid == user_uuid,
+                        models.User.uuid == user_uuid
                     ).scalar_subquery(),
                     models.TimeRangeEventNotDeleted.start_time >= start
-                ).limit(limit)
-            result = (await db.execute(statement)).all()
+                )
 
+            result = (await db.execute(statement)).all()
             for event in result:
-                yield schemas.TimeRangeEventNotDeletedView.model_validate(event[0])
+                yield schemas.TimeRangeEventNotDeleted.model_validate(event._mapping)
         except Exception as e:
             print(f'Failed to get all {self.model.__tablename__}: {e}')
             raise e
@@ -64,19 +93,37 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
         self,
         db: AsyncSession,
         user_uuid: UUID
-    ) -> schemas.TimeRangeEventNotDeletedView|None:
+    ) -> schemas.TimeRangeEventNotDeleted|None:
         try:
-            statement = select(models.TimeRangeEventNotDeleted).where(
+            statement = select(
+                models.TimeRangeEventNotDeleted.uuid,
+                models.TimeRangeEventNotDeleted.title,
+                models.TimeRangeEventNotDeleted.description,
+                models.TimeRangeEventNotDeleted.start_time,
+                models.TimeRangeEventNotDeleted.end_time,
+                models.Category.uuid.label("category_uuid"),
+                models.SubCategory.uuid.label("sub_category_uuid")
+            ).join(
+                models.Category,  # Tabela com a qual será feito o join
+                models.Category.id == models.TimeRangeEventNotDeleted.category_id,
+                isouter=True  # LEFT JOIN
+            ).join(
+                models.SubCategory,  # Outra tabela para join
+                models.SubCategory.id == models.TimeRangeEventNotDeleted.sub_category_id,
+                isouter=True  # LEFT JOIN
+            ).where(
                 models.TimeRangeEventNotDeleted.user_id == select(models.User.id).where(
                     models.User.uuid == user_uuid,
                 ).scalar_subquery(),
-                models.TimeRangeEventNotDeleted.end_time == None
+                models.TimeRangeEventNotDeleted.end_time == None,
+                models.Category.id == models.TimeRangeEvent.category_id,
+                models.SubCategory.id == models.TimeRangeEvent.sub_category_id
             )
             result = (await db.execute(statement)).first()
 
             if result is None or len(result) <= 0:
                 return None
-            return schemas.TimeRangeEventNotDeletedView.model_validate(result[0])
+            return schemas.TimeRangeEventNotDeleted.model_validate(result[0]._mapping)
         except Exception as e:
             print(f'Failed to get {self.model.__tablename__}: {e}')
             raise e
@@ -90,8 +137,12 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
                 user_id = select(models.User.id).where(
                     models.User.uuid == data.user_uuid
                 ).scalar_subquery(),
-                category_id = data.category_id,
-                sub_category_id = data.sub_category_id,
+                category_id = select(models.Category.id).where(
+                    models.Category.uuid == data.category_uuid
+                ).scalar_subquery(),
+                sub_category_id = select(models.SubCategory.id).where(
+                    models.SubCategory.uuid == data.sub_category_uuid
+                ).scalar_subquery(),
                 title = data.title,
                 description = data.description,
                 start_time = data.start_time,
@@ -113,12 +164,24 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
         data: schemas.TimeRangeEventUpdate
     ) -> schemas.TimeRangeEventTable:
         try:
+            values = data.model_dump(exclude_unset=True)
+            if "category_uuid" in values:
+                values["category_id"] = select(models.Category.id).where(
+                    models.Category.uuid == values["category_uuid"]
+                ).scalar_subquery()
+                values.pop("category_uuid", None)
+            if "sub_category_uuid" in values:
+                values["sub_category_id"] = select(models.SubCategory.id).where(
+                    models.SubCategory.uuid == values["sub_category_uuid"]
+                ).scalar_subquery()
+                values.pop("sub_category_uuid", None)
+
             statement = update(
                 self.model
             ).where(
                 self.model.uuid == data.uuid
             ).values(
-                data.model_dump(exclude_unset=True)
+                values
             ).returning(self.model)
 
             result = (await db.execute(statement)).one()
@@ -128,6 +191,27 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
             return self.schemaRecord.model_validate(result[0])
         except Exception as e:
             raise e
+    
+    async def delete_timer(
+        self,
+        db: AsyncSession,
+        uuid: UUID
+    ) -> UUID:
+        try:
+            statement = delete(self.model).where(
+                self.model.uuid == uuid
+            ).returning(self.model.uuid)
+            result = await db.execute(statement)
+            await db.commit()
+            deleted_instance = result.fetchone()
+
+            if not deleted_instance:
+                raise exeptions.ItemNotFound()
+            return UUID(deleted_instance[0])
+        except Exception as e:
+            print(f"Failed to delete {self.model.__tablename__}: {e}")
+            raise e
+        
 
 time_range_event = TimeRangeEventDao(
     model=models.TimeRangeEvent,

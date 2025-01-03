@@ -8,6 +8,8 @@ import dayjs from "dayjs";
 import style from "@/styles/pages/timer.module.scss";
 import { PageContext, type PageContextType } from "@/context/pageContext";
 import { TimeRangeEventNotDeleted } from "@/api/types/timerEvent";
+import { CategotyCompletedRecord } from "@/api/types/category";
+import { CategorySelector, type SelectedCategoryObject } from "@/components";
 import { Repository } from "@/api";
 
 const { RangePicker } = DatePicker;
@@ -56,7 +58,12 @@ function Main(props: MainProps) {
                 <button onClick={get_list}>Get List</button>
             </section>
             <section>
-                {list && list.map((item) => <TimerEvent key={item.uuid} repository={repository} timerEvent={item} />)}
+                {list && list.map((item) => <TimerEvent 
+                    key={item.uuid} 
+                    repository={repository} 
+                    timerEvent={item}
+                    categories={props.context.categories?props.context.categories:[]} 
+                />)}
             </section>
         </main>
     );
@@ -141,14 +148,31 @@ function RunningTimer(props: RunningTimerProps) {
 
 type TimerEventProps = {
     repository: Repository;
+    categories: CategotyCompletedRecord[]
     timerEvent: TimeRangeEventNotDeleted;
 };
 function TimerEvent(props: TimerEventProps) {
-    //const {repository} = props;
-    const [timerEvent] = useState(props.timerEvent);
+    const {repository} = props;
+    const [timerEvent, setTimerEvent] = useState(props.timerEvent);
+    const [selectedCategory, setSelectedCategory] = useState<SelectedCategoryObject|undefined>(undefined);
+
+    useEffect(() => {
+        setTimerEvent(props.timerEvent);
+    }, [props.timerEvent])
+    useEffect(() => {
+        console.log(selectedCategory);
+    }, [selectedCategory])
+
 
     return (
         <div className={style.timerEvent}>
+            <CategorySelector 
+                categories={props.categories}
+                setItem={(item) => {
+                    setSelectedCategory(item)
+                }}
+                selected={selectedCategory}
+            />
             <RangePicker showTime defaultValue={[dayjs(timerEvent.start_time), dayjs(timerEvent.end_time)]} />
         </div>
     );

@@ -75,6 +75,18 @@ export class TimerEvent extends Base {
         }
         throw new Error("error trying to patch TimerEvent.");
     }
+    public async delete(uuid: UUID): Promise<UUID> {
+        const response = await this.fetch(uuid, {
+            method: "DELETE",
+        });
+        if (response.ok) {
+            const respose_json = (await response.json()) as UUID;
+
+            return respose_json;
+        } else {
+            throw new Error("error trying to delete.");
+        }
+    }
     public async get_by_range(start: Date, end?: Date): Promise<TimeRangeEventNotDeleted[]> {
         const data = {
             user_uuid: this.user_uuid,

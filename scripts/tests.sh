@@ -2,6 +2,7 @@
 
 # Exit in case of error
 set -e
+clear
 
 docker-compose exec backend "./scripts/mypy.sh"
 
