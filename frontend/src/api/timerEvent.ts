@@ -16,8 +16,6 @@ export class TimerEvent extends Base {
         super("timer_event/", user_uuid);
     }
     private parseObject(apiObject: TimeRangeEventNotDeletedAPI): TimeRangeEventNotDeleted {
-        console.warn({ apiObject });
-
         return {
             ...apiObject,
             start_time: apiDateToDate(apiObject.start_time),
@@ -56,7 +54,7 @@ export class TimerEvent extends Base {
             method: "POST",
             body: JSON.stringify(this.parsePostObject(obj)),
         });
-        if (response.status < 400) {
+        if (response.ok) {
             const respose_json = (await response.json()) as TimeRangeEventNotDeletedAPI;
 
             return this.parseObject(respose_json);
@@ -64,11 +62,12 @@ export class TimerEvent extends Base {
         throw new Error("error trying to post TimerEvent.");
     }
     public async patch(obj: TimeRangeEventPatch): Promise<TimeRangeEventNotDeleted> {
+        console.warn({ obj });
         const response = await this.fetch("", {
             method: "PATCH",
-            body: JSON.stringify(this.parsePatchObject(obj)),
+            body: JSON.stringify(this.parsePatchObject(obj))
         });
-        if (response.status < 400) {
+        if (response.ok) {
             const respose_json = (await response.json()) as TimeRangeEventNotDeletedAPI;
 
             return this.parseObject(respose_json);
@@ -100,7 +99,6 @@ export class TimerEvent extends Base {
         });
         if (response.ok) {
             const response_json = (await response.json()) as TimeRangeEventNotDeletedAPI[];
-            console.log({ response_json });
 
             return response_json.map((item) => {
                 return this.parseObject(item);

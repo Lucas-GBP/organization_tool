@@ -115,15 +115,13 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
                 models.TimeRangeEventNotDeleted.user_id == select(models.User.id).where(
                     models.User.uuid == user_uuid,
                 ).scalar_subquery(),
-                models.TimeRangeEventNotDeleted.end_time == None,
-                models.Category.id == models.TimeRangeEvent.category_id,
-                models.SubCategory.id == models.TimeRangeEvent.sub_category_id
+                models.TimeRangeEventNotDeleted.end_time == None
             )
             result = (await db.execute(statement)).first()
 
             if result is None or len(result) <= 0:
                 return None
-            return schemas.TimeRangeEventNotDeleted.model_validate(result[0]._mapping)
+            return schemas.TimeRangeEventNotDeleted.model_validate(result._mapping)
         except Exception as e:
             print(f'Failed to get {self.model.__tablename__}: {e}')
             raise e
@@ -175,6 +173,7 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
                     models.SubCategory.uuid == values["sub_category_uuid"]
                 ).scalar_subquery()
                 values.pop("sub_category_uuid", None)
+            print(f"\n\n\nvalues: {values}\n\n\n")
 
             statement = update(
                 self.model
@@ -191,7 +190,6 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
             return self.schemaRecord.model_validate(result[0])
         except Exception as e:
             raise e
-    
     async def delete_timer(
         self,
         db: AsyncSession,

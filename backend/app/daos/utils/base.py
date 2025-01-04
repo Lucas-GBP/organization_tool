@@ -32,7 +32,7 @@ class BaseDao(Generic[ModelType, SchemaType]):
         try:
             query = (
                 select(self.model)
-                .where(self.model.uuid == uuid)
+                .where(self.model.uuid == uuid) # type: ignore[attr-defined, unused-ignore]
                 .limit(1)
             )
             result = await db.execute(query)

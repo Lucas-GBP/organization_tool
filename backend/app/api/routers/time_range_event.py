@@ -1,6 +1,6 @@
 from uuid import UUID
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 from fastapi import APIRouter, Depends, Body, status, HTTPException, Response
 from app import daos, schemas
 from app.daos.utils import exeptions
@@ -145,7 +145,7 @@ async def post(
     }
 )
 async def patch(
-    body:schemas.TimeRangeEventPatch = Body(...),
+    body: schemas.TimeRangeEventPatch = Body(...),
     Session: AsyncSession = Depends(get_session)
 ) -> schemas.TimeRangeEventNotDeleted:
     async with Session as db, db.begin():
@@ -163,7 +163,8 @@ async def patch(
             )
 
             return await daos.time_range_event.get_not_deleted(db, patched.uuid)
-        except Exception:
+        except Exception as e:
+            print(e)
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

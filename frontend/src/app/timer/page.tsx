@@ -1,7 +1,7 @@
 "use client";
 import Head from "next/head";
 import Link from "next/link";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 //import { CategorySelector, SelectedCategoryObject } from "@/components/categorySelector";
@@ -10,6 +10,7 @@ import { PageContext, type PageContextType } from "@/context/pageContext";
 import { TimeRangeEventNotDeleted } from "@/api/types/timerEvent";
 import { CategotyCompletedRecord } from "@/api/types/category";
 import { CategorySelector, type SelectedCategoryObject } from "@/components";
+import { findCategory } from "@/utils";
 import { Repository } from "@/api";
 
 const { RangePicker } = DatePicker;
@@ -51,7 +52,10 @@ function Main(props: MainProps) {
         <main>
             <h1>Timer</h1>
             <section>
-                <RunningTimer repository={repository} />
+                <RunningTimer 
+                    repository={repository}
+                    categories={props.context.categories ? props.context.categories : []}
+                />
                 <br />
             </section>
             <section>
@@ -65,6 +69,7 @@ function Main(props: MainProps) {
                             repository={repository}
                             timerEvent={item}
                             categories={props.context.categories ? props.context.categories : []}
+                            updateTimerEvent={(item) => console.log({item})}
                         />
                     ))}
             </section>
@@ -74,14 +79,39 @@ function Main(props: MainProps) {
 
 type RunningTimerProps = {
     repository: Repository;
+    categories: CategotyCompletedRecord[];
 };
 function RunningTimer(props: RunningTimerProps) {
     const { repository } = props;
     const [running, setRunning] = useState<TimeRangeEventNotDeleted | undefined>(undefined);
     const [deltaTime, setDeltaTime] = useState<number | undefined>(undefined);
 
+    const formatTime = useMemo(() => {
+        if (!deltaTime) {
+            return "";
+        }
+        const seconds = deltaTime / 100;
+
+        const deci = Math.floor(deltaTime % 100);
+        const secs = Math.floor(seconds % 60);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const hours = Math.floor(seconds / 3600);
+
+        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs
+            .toString()
+            .padStart(2, "0")}.${deci.toString().padStart(2, "0")}`;
+    }, [deltaTime]);
+    const selectedCategory = useMemo(() => {
+        if (!running){
+            return undefined;
+        }
+        return findCategory(props.categories, running.category_uuid, running.sub_category_uuid);
+    }, [props.categories, running]);
+
     const get_running = useCallback(async () => {
-        setRunning(await repository.timerEvent.get_running());
+        const _runnig = await repository.timerEvent.get_running();
+        console.log({_runnig});
+        setRunning(_runnig);
     }, [repository]);
     const start_timer = useCallback(async () => {
         const running = await repository.timerEvent.post({
@@ -101,18 +131,34 @@ function RunningTimer(props: RunningTimerProps) {
             get_running();
         }
     }, [repository, running, get_running]);
-    const formatTime = useCallback((decisecond: number) => {
-        const seconds = decisecond / 100;
+    const update_categories = useCallback(
+        async (item: SelectedCategoryObject) => {
+            if (!running){
+                return;
+            }
+            const updated = await repository.timerEvent.patch({
+                ...running,
+                category_uuid: item.category.uuid,
+                sub_category_uuid: item.subCategory?.uuid,
+            });
+            if (updated.category_uuid !== item.category.uuid) {
+                console.error("category uuid not updated.");
+                return;
+            }
+            if (!item.subCategory) {
+                if (updated.sub_category_uuid) {
+                    console.error("sub category uuid not updated. A");
+                    return;
+                }
+            } else if (item.subCategory.uuid !== updated.sub_category_uuid) {
+                console.error("sub category uuid not updated. B");
+                return;
+            }
 
-        const deci = Math.floor(decisecond % 100);
-        const secs = Math.floor(seconds % 60);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const hours = Math.floor(seconds / 3600);
-
-        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs
-            .toString()
-            .padStart(2, "0")}.${deci.toString().padStart(2, "0")}`;
-    }, []);
+            setRunning(updated);
+        },
+        [repository.timerEvent, running, setRunning]
+    );
 
     useEffect(() => {
         if (!running) {
@@ -140,7 +186,8 @@ function RunningTimer(props: RunningTimerProps) {
             {running ? (
                 <>
                     <button onClick={stop_timer}>Stop Timer</button>
-                    {deltaTime && <div>{formatTime(deltaTime)}</div>}
+                    {/*TODO: <CategorySelector categories={props.categories} setItem={update_categories} selected={selectedCategory} />*/}
+                    {deltaTime && <div>{formatTime}</div>}
                 </>
             ) : (
                 <button onClick={start_timer}>Start Timer</button>
@@ -153,28 +200,49 @@ type TimerEventProps = {
     repository: Repository;
     categories: CategotyCompletedRecord[];
     timerEvent: TimeRangeEventNotDeleted;
+    updateTimerEvent: (data: TimeRangeEventNotDeleted|undefined) => void;
 };
 function TimerEvent(props: TimerEventProps) {
     const { repository } = props;
     const [timerEvent, setTimerEvent] = useState(props.timerEvent);
-    const [selectedCategory, setSelectedCategory] = useState<SelectedCategoryObject | undefined>(undefined);
+
+    const selectedCategory = useMemo(() => {
+        return findCategory(props.categories, timerEvent.category_uuid, timerEvent.sub_category_uuid);
+    }, [props.categories, timerEvent]);
+
+    const update_categories = useCallback(
+        async (item: SelectedCategoryObject) => {
+            const updated = await repository.timerEvent.patch({
+                ...timerEvent,
+                category_uuid: item.category.uuid,
+                sub_category_uuid: item.subCategory?.uuid,
+            });
+            if (updated.category_uuid !== item.category.uuid) {
+                console.error("category uuid not updated.");
+                return;
+            }
+            if (!item.subCategory) {
+                if (updated.sub_category_uuid) {
+                    console.error("sub category uuid not updated. A");
+                    return;
+                }
+            } else if (item.subCategory.uuid !== updated.sub_category_uuid) {
+                console.error("sub category uuid not updated. B");
+                return;
+            }
+
+            setTimerEvent(updated);
+        },
+        [repository.timerEvent, timerEvent, setTimerEvent]
+    );
 
     useEffect(() => {
         setTimerEvent(props.timerEvent);
     }, [props.timerEvent]);
-    useEffect(() => {
-        console.log(selectedCategory);
-    }, [selectedCategory]);
 
     return (
         <div className={style.timerEvent}>
-            <CategorySelector
-                categories={props.categories}
-                setItem={(item) => {
-                    setSelectedCategory(item);
-                }}
-                selected={selectedCategory}
-            />
+            <CategorySelector categories={props.categories} setItem={update_categories} selected={selectedCategory} />
             <RangePicker showTime defaultValue={[dayjs(timerEvent.start_time), dayjs(timerEvent.end_time)]} />
         </div>
     );

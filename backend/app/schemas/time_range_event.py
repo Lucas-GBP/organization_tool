@@ -21,10 +21,10 @@ class TimeRangeEventPatch(BaseModel):
     uuid:UUID
     start_time:datetime
     # Optional arguments
-    category_uuid:Optional[UUID]
-    sub_category_uuid:Optional[UUID]
-    title:Optional[str]
-    description:Optional[str]
+    category_uuid:Optional[UUID] = None
+    sub_category_uuid:Optional[UUID] = None
+    title:Optional[str] = None
+    description:Optional[str] = None
     end_time:Optional[datetime]
 class TimeRangeEventGetByRange(BaseModel):
     user_uuid:UUID

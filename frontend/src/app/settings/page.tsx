@@ -9,7 +9,6 @@ import { arrayToMap } from "@/utils/arrayToMap";
 import { Repository } from "@/api";
 import { organizeCategories } from "@/utils/organizeCategories";
 
-
 export default function Page() {
     const context = useContext(PageContext);
 
