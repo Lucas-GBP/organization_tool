@@ -196,16 +196,18 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
         uuid: UUID
     ) -> UUID:
         try:
-            statement = delete(self.model).where(
+            print(f"\n\n\nuuid to delete: {uuid}\n\n\n")
+            statement = update(
+                self.model
+            ).where(
                 self.model.uuid == uuid
+            ).values(
+                deleted_at = datetime.now()
             ).returning(self.model.uuid)
-            result = await db.execute(statement)
-            await db.commit()
-            deleted_instance = result.fetchone()
+            result = (await db.execute(statement)).first()
+            print(f"result: {result[0]}\n\n\n")
 
-            if not deleted_instance:
-                raise exeptions.ItemNotFound()
-            return UUID(deleted_instance[0])
+            return result[0]
         except Exception as e:
             print(f"Failed to delete {self.model.__tablename__}: {e}")
             raise e

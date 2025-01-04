@@ -1,7 +1,7 @@
 "use client";
 import Head from "next/head";
 import Link from "next/link";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 //import { CategorySelector, SelectedCategoryObject } from "@/components/categorySelector";
@@ -9,8 +9,8 @@ import style from "@/styles/pages/timer.module.scss";
 import { PageContext, type PageContextType } from "@/context/pageContext";
 import { TimeRangeEventNotDeleted } from "@/api/types/timerEvent";
 import { CategotyCompletedRecord } from "@/api/types/category";
-import { CategorySelector, type SelectedCategoryObject } from "@/components";
-import { findCategory } from "@/utils";
+import { CategorySelector, type SelectedCategoryObject, Button, Input } from "@/components";
+import { findCategory, calculateDeltaDate, type DeltaDateType } from "@/utils";
 import { Repository } from "@/api";
 
 const { RangePicker } = DatePicker;
@@ -36,43 +36,15 @@ type MainProps = {
     context: PageContextType;
 };
 function Main(props: MainProps) {
-    const { repository } = props.context;
-    const [list, setList] = useState<undefined | TimeRangeEventNotDeleted[]>(undefined);
-
-    const get_list = useCallback(async () => {
-        const _list = await repository.timerEvent.get_by_range(new Date("2023"), new Date());
-        setList(_list);
-    }, [repository, setList]);
-
-    useEffect(() => {
-        // get_list();
-    }, []);
+    const { repository, categories } = props.context;
 
     return (
         <main>
             <h1>Timer</h1>
             <section>
-                <RunningTimer 
-                    repository={repository}
-                    categories={props.context.categories ? props.context.categories : []}
-                />
-                <br />
+                <RunningTimer repository={repository} categories={categories ? categories : []} />
             </section>
-            <section>
-                <button onClick={get_list}>Get List</button>
-            </section>
-            <section>
-                {list &&
-                    list.map((item) => (
-                        <TimerEvent
-                            key={item.uuid}
-                            repository={repository}
-                            timerEvent={item}
-                            categories={props.context.categories ? props.context.categories : []}
-                            updateTimerEvent={(item) => console.log({item})}
-                        />
-                    ))}
-            </section>
+            <TimerEventList repository={repository} categories={categories ? categories : []} />
         </main>
     );
 }
@@ -84,25 +56,19 @@ type RunningTimerProps = {
 function RunningTimer(props: RunningTimerProps) {
     const { repository } = props;
     const [running, setRunning] = useState<TimeRangeEventNotDeleted | undefined>(undefined);
-    const [deltaTime, setDeltaTime] = useState<number | undefined>(undefined);
+    const [deltaTime, setDeltaTime] = useState<DeltaDateType | undefined>(undefined);
 
     const formatTime = useMemo(() => {
         if (!deltaTime) {
             return "";
         }
-        const seconds = deltaTime / 100;
 
-        const deci = Math.floor(deltaTime % 100);
-        const secs = Math.floor(seconds % 60);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const hours = Math.floor(seconds / 3600);
-
-        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs
+        return `${deltaTime.hours.toString().padStart(2, "0")}:${deltaTime.minutes.toString().padStart(2, "0")}:${deltaTime.seconds
             .toString()
-            .padStart(2, "0")}.${deci.toString().padStart(2, "0")}`;
+            .padStart(2, "0")}.${deltaTime.centiseconds.toString().padStart(2, "0")}`;
     }, [deltaTime]);
     const selectedCategory = useMemo(() => {
-        if (!running){
+        if (!running) {
             return undefined;
         }
         return findCategory(props.categories, running.category_uuid, running.sub_category_uuid);
@@ -110,7 +76,6 @@ function RunningTimer(props: RunningTimerProps) {
 
     const get_running = useCallback(async () => {
         const _runnig = await repository.timerEvent.get_running();
-        console.log({_runnig});
         setRunning(_runnig);
     }, [repository]);
     const start_timer = useCallback(async () => {
@@ -133,7 +98,7 @@ function RunningTimer(props: RunningTimerProps) {
     }, [repository, running, get_running]);
     const update_categories = useCallback(
         async (item: SelectedCategoryObject) => {
-            if (!running){
+            if (!running) {
                 return;
             }
             const updated = await repository.timerEvent.patch({
@@ -157,7 +122,7 @@ function RunningTimer(props: RunningTimerProps) {
 
             setRunning(updated);
         },
-        [repository.timerEvent, running, setRunning]
+        [repository, running, setRunning]
     );
 
     useEffect(() => {
@@ -167,10 +132,7 @@ function RunningTimer(props: RunningTimerProps) {
         }
         // Atualiza o tempo decorrido a cada segundo
         const interval = setInterval(() => {
-            const now = new Date();
-            const miliseconds = now.getTime() - running.start_time.getTime();
-            const delta_t = Math.floor(miliseconds / 10);
-            setDeltaTime(delta_t);
+            setDeltaTime(calculateDeltaDate(running.start_time));
         }, 10);
 
         return () => clearInterval(interval);
@@ -185,14 +147,83 @@ function RunningTimer(props: RunningTimerProps) {
         <>
             {running ? (
                 <>
-                    <button onClick={stop_timer}>Stop Timer</button>
-                    {/*TODO: <CategorySelector categories={props.categories} setItem={update_categories} selected={selectedCategory} />*/}
+                    <Button onClick={stop_timer}>Stop Timer</Button>
+                    <CategorySelector
+                        categories={props.categories}
+                        setItem={update_categories}
+                        selected={selectedCategory}
+                    />
                     {deltaTime && <div>{formatTime}</div>}
                 </>
             ) : (
-                <button onClick={start_timer}>Start Timer</button>
+                <Button onClick={start_timer}>Start Timer</Button>
             )}
         </>
+    );
+}
+
+type TimerEventListProps = {
+    repository: Repository;
+    categories: CategotyCompletedRecord[];
+};
+function TimerEventList(props: TimerEventListProps) {
+    const { repository } = props;
+    const [list, setList] = useState<undefined | TimeRangeEventNotDeleted[]>(undefined);
+    const [range, setRange] = useState<{ start: Date; end: Date }>({
+        start: new Date("2023"),
+        end: new Date(),
+    });
+
+    const get_list = useCallback(
+        async (range: { start: Date; end: Date }) => {
+            const _list = await repository.timerEvent.get_by_range(range.start, new Date());
+            _list.sort((a, b) => a.start_time.getTime() - b.start_time.getTime())
+            setList(_list);
+        },
+        [repository, setList]
+    );
+    const updateTimerEvent = useCallback(
+        (index: number, event?: TimeRangeEventNotDeleted) => {
+            if (!list) {
+                return;
+            }
+            const list_copy = [...list];
+            if (!event) {
+                list_copy.splice(index, 1);
+                setList(list_copy);
+                return;
+            }
+            list_copy[index] = event;
+            setList(list_copy);
+            return;
+        },
+        [list, setList]
+    );
+
+    useEffect(() => {
+        get_list(range);
+    }, [get_list, range]);
+
+    return (
+        <section>
+            <div>
+                <Button onClick={() => get_list(range)}>Get List</Button>
+            </div>
+            <div>
+                {list &&
+                    list.map((item, index) => (
+                        <TimerEvent
+                            key={item.uuid}
+                            repository={repository}
+                            categories={props.categories ? props.categories : []}
+                            timerEvent={item}
+                            setTimerEvent={(update_item) => {
+                                updateTimerEvent(index, update_item);
+                            }}
+                        />
+                    ))}
+            </div>
+        </section>
     );
 }
 
@@ -200,12 +231,21 @@ type TimerEventProps = {
     repository: Repository;
     categories: CategotyCompletedRecord[];
     timerEvent: TimeRangeEventNotDeleted;
-    updateTimerEvent: (data: TimeRangeEventNotDeleted|undefined) => void;
+    setTimerEvent: (data?: TimeRangeEventNotDeleted) => void;
 };
 function TimerEvent(props: TimerEventProps) {
-    const { repository } = props;
-    const [timerEvent, setTimerEvent] = useState(props.timerEvent);
+    const { repository, timerEvent, setTimerEvent } = props;
 
+    const deltaTime = useMemo(() => {
+        return calculateDeltaDate(timerEvent.start_time, timerEvent.end_time);
+    }, [timerEvent]);
+    const formatedTime = useMemo(() => {
+        if (!deltaTime) {
+            return "";
+        }
+
+        return `${deltaTime.hours.toString().padStart(2, "0")}h ${deltaTime.minutes.toString().padStart(2, "0")}min ${deltaTime.seconds.toString().padStart(2, "0")}s`;
+    }, [deltaTime]);
     const selectedCategory = useMemo(() => {
         return findCategory(props.categories, timerEvent.category_uuid, timerEvent.sub_category_uuid);
     }, [props.categories, timerEvent]);
@@ -233,8 +273,36 @@ function TimerEvent(props: TimerEventProps) {
 
             setTimerEvent(updated);
         },
-        [repository.timerEvent, timerEvent, setTimerEvent]
+        [repository, timerEvent, setTimerEvent]
     );
+    const update_title = useCallback(
+        async (e: ChangeEvent<HTMLInputElement>) => {
+            const updated = await repository.timerEvent.patch({
+                ...timerEvent,
+                title: e.target.value.length > 0 ? e.target.value : undefined,
+            });
+            setTimerEvent(updated);
+        },
+        [repository, timerEvent, setTimerEvent]
+    );
+    const update_description = useCallback(
+        async (e: ChangeEvent<HTMLInputElement>) => {
+            const updated = await repository.timerEvent.patch({
+                ...timerEvent,
+                description: e.target.value.length > 0 ? e.target.value : undefined,
+            });
+            setTimerEvent(updated);
+        },
+        [repository, timerEvent, setTimerEvent]
+    );
+    const delete_event = useCallback(async () => {
+        const deleted = await repository.timerEvent.delete(timerEvent.uuid);
+        if(deleted !== timerEvent.uuid){
+            return;
+        }
+
+        setTimerEvent(undefined);
+    }, [repository, timerEvent, setTimerEvent])
 
     useEffect(() => {
         setTimerEvent(props.timerEvent);
@@ -242,8 +310,19 @@ function TimerEvent(props: TimerEventProps) {
 
     return (
         <div className={style.timerEvent}>
+            {formatedTime}{"\t"}
             <CategorySelector categories={props.categories} setItem={update_categories} selected={selectedCategory} />
-            <RangePicker showTime defaultValue={[dayjs(timerEvent.start_time), dayjs(timerEvent.end_time)]} />
+            <RangePicker 
+                showTime 
+                defaultValue={[
+                    dayjs(timerEvent.start_time), 
+                    dayjs(timerEvent.end_time)
+                ]}
+                onChange={(item) => console.warn(item)} 
+            />
+            <Button onClick={delete_event}>Delete</Button> <br />
+            title: <Input defaultValue={timerEvent.title} onBlur={update_title} />
+            Description: <Input defaultValue={timerEvent.description} onBlur={update_description} />
         </div>
     );
 }

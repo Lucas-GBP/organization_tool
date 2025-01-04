@@ -65,7 +65,7 @@ export class TimerEvent extends Base {
         console.warn({ obj });
         const response = await this.fetch("", {
             method: "PATCH",
-            body: JSON.stringify(this.parsePatchObject(obj))
+            body: JSON.stringify(this.parsePatchObject(obj)),
         });
         if (response.ok) {
             const respose_json = (await response.json()) as TimeRangeEventNotDeletedAPI;

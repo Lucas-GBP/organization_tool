@@ -1,0 +1,9 @@
+@use "../../variables.module";
+
+$button_height: 1.75em;
+
+.buttonFragment {
+    display: inline-block;
+    border-radius: variables.$border-radius-s;
+    height: $button_height;
+}
