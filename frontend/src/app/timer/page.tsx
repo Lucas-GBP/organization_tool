@@ -236,16 +236,19 @@ type TimerEventProps = {
 function TimerEvent(props: TimerEventProps) {
     const { repository, timerEvent, setTimerEvent } = props;
 
-    const deltaTime = useMemo(() => {
-        return calculateDeltaDate(timerEvent.start_time, timerEvent.end_time);
-    }, [timerEvent]);
     const formatedTime = useMemo(() => {
+        const deltaTime = calculateDeltaDate(timerEvent.start_time, timerEvent.end_time);
         if (!deltaTime) {
             return "";
         }
+        let format = "";
+        if(deltaTime.days > 0){
+            format += `${deltaTime.days.toString()} dias `;
+        }
+        format += `${deltaTime.hours.toString().padStart(2, "0")}h ${deltaTime.minutes.toString().padStart(2, "0")}min ${deltaTime.seconds.toString().padStart(2, "0")}s`;
 
-        return `${deltaTime.hours.toString().padStart(2, "0")}h ${deltaTime.minutes.toString().padStart(2, "0")}min ${deltaTime.seconds.toString().padStart(2, "0")}s`;
-    }, [deltaTime]);
+        return format;
+    }, [timerEvent]);
     const selectedCategory = useMemo(() => {
         return findCategory(props.categories, timerEvent.category_uuid, timerEvent.sub_category_uuid);
     }, [props.categories, timerEvent]);
@@ -295,6 +298,20 @@ function TimerEvent(props: TimerEventProps) {
         },
         [repository, timerEvent, setTimerEvent]
     );
+    const update_range = useCallback(async (dates: any | null, dateStrings: [string, string]) => {
+        if(!dates) return;
+
+        const new_start = new Date(dateStrings[0]);
+        const new_end = new Date(dateStrings[1]);
+
+        const updated = await repository.timerEvent.patch({
+            ...timerEvent,
+            start_time: new_start,
+            end_time: new_end
+        });
+
+        setTimerEvent(updated);
+    }, [repository, timerEvent, setTimerEvent])
     const delete_event = useCallback(async () => {
         const deleted = await repository.timerEvent.delete(timerEvent.uuid);
         if(deleted !== timerEvent.uuid){
@@ -318,7 +335,7 @@ function TimerEvent(props: TimerEventProps) {
                     dayjs(timerEvent.start_time), 
                     dayjs(timerEvent.end_time)
                 ]}
-                onChange={(item) => console.warn(item)} 
+                onChange={update_range} 
             />
             <Button onClick={delete_event}>Delete</Button> <br />
             title: <Input defaultValue={timerEvent.title} onBlur={update_title} />
