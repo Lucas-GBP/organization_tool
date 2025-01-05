@@ -205,9 +205,10 @@ class TimeRangeEventDao(BaseDao[models.TimeRangeEvent, schemas.TimeRangeEventTab
                 deleted_at = datetime.now()
             ).returning(self.model.uuid)
             result = (await db.execute(statement)).first()
-            print(f"result: {result[0]}\n\n\n")
+            if not result:
+                raise exeptions.FailureToDelete(self.model)
 
-            return result[0]
+            return UUID(result[0])
         except Exception as e:
             print(f"Failed to delete {self.model.__tablename__}: {e}")
             raise e

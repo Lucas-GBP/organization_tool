@@ -29,6 +29,10 @@ class FailureToPatch(Exception):
     def __init__(self, table:Type[ModelType]) -> None:
         super().__init__(f"Failed to Patch data into {table.__tablename__}.")
         return
+class FailureToDelete(Exception):
+    def __init__(self, table:Type[ModelType]) -> None:
+        super().__init__(f"Failed to Delete {table.__tablename__}.")
+        return
 
 """
     Timer Exeptions

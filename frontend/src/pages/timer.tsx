@@ -15,7 +15,7 @@ import { Repository } from "@/api";
 const { RangePicker } = DatePicker;
 
 export function Main() {
-    const context = useContext(PageContext);
+    const context = useContext<PageContextType|null>(PageContext);
 
     return (
         <main>
@@ -150,7 +150,7 @@ function TimerEventList(props: TimerEventListProps) {
     const { repository } = props;
     const [list, setList] = useState<undefined | TimeRangeEventNotDeleted[]>(undefined);
     const [range, setRange] = useState<{ start: Date; end: Date }>({
-        start: new Date("2023"),
+        start: new Date(),
         end: new Date(),
     });
 
@@ -179,15 +179,39 @@ function TimerEventList(props: TimerEventListProps) {
         },
         [list, setList]
     );
+    const update_range = useCallback((dates: any | null, dateStrings: [string, string]) => {
+        if(!dates) return;
+        setRange({
+            start: new Date(dateStrings[0]),
+            end: new Date(dateStrings[1])
+        })
+    }, [setRange])
 
     useEffect(() => {
         get_list(range);
     }, [get_list, range]);
+    useEffect(() => {
+        const now = new Date();
+        const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+        setRange({
+            end: twentyFourHoursAgo,
+            start: now
+        });
+    }, [])
 
     return (
         <section>
             <div>
-                <Button onClick={() => get_list(range)}>Get List</Button>
+                <Button onClick={() => get_list(range)}>Get List</Button><br/>
+                <RangePicker 
+                    showTime 
+                    defaultValue={[
+                        dayjs(range.start), 
+                        dayjs(range.end)
+                    ]}
+                    onChange={update_range} 
+                />
             </div>
             <div>
                 {list &&
@@ -303,7 +327,7 @@ function TimerEvent(props: TimerEventProps) {
 
     useEffect(() => {
         setTimerEvent(props.timerEvent);
-    }, [props.timerEvent]);
+    }, [props.timerEvent, setTimerEvent]);
 
     return (
         <div className={style.timerEvent}>
