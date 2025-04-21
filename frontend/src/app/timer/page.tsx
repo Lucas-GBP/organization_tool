@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Main } from "@/pages/timer";
-import { Metadata } from "next";
+import { Main } from "@/templates/timer";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: 'Timer',

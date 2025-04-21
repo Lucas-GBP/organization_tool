@@ -187,6 +187,24 @@ function TimerEventList(props: TimerEventListProps) {
         })
     }, [setRange])
 
+    const list_component = useMemo(() => {
+        if (!list) return <></>;
+        if (list.length <= 0) {
+            return <span>Nenhum evento encontrado.</span>
+        }
+        return <>{list.map((item, index) => (
+            <TimerEvent
+                key={item.uuid}
+                repository={repository}
+                categories={props.categories ? props.categories : []}
+                timerEvent={item}
+                setTimerEvent={(update_item) => {
+                    updateTimerEvent(index, update_item);
+                }}
+            />
+        ))}</>
+    }, [list, repository, props.categories, updateTimerEvent])
+
     useEffect(() => {
         get_list(range);
     }, [get_list, range]);
@@ -214,18 +232,7 @@ function TimerEventList(props: TimerEventListProps) {
                 />
             </div>
             <div>
-                {list &&
-                    list.map((item, index) => (
-                        <TimerEvent
-                            key={item.uuid}
-                            repository={repository}
-                            categories={props.categories ? props.categories : []}
-                            timerEvent={item}
-                            setTimerEvent={(update_item) => {
-                                updateTimerEvent(index, update_item);
-                            }}
-                        />
-                    ))}
+                {list_component}
             </div>
         </section>
     );
